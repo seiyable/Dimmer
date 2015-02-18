@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="traceroute visualizer">
+    <meta name="author" content="Seiya Kobayashi">
+    <title>Auto Dimmer</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/main.css" rel="stylesheet">
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
+    </script>
+
+    <!-- Javascript functions -->
+    <script>
+    //when the document is loaded
+	$(document).ready(function(){
+		resizeContainerWidth();
+	});
+
+	//when the window is resized
+	$(window).resize(function(){
+		resizeContainerWidth();
+	});
+
+	function resizeContainerWidth(){
+		//get the window height
+		var windowHeight = $(window).height();
+
+		//calc the page width based on iPhone 6's screen resolution
+		var containerWidth = 0.5625 * windowHeight;
+
+		//atatch it to css
+		$(".container").css("width",containerWidth+"px");
+	}
+
+    </script>
+</head>
+<body>
+
+    {{{body}}}
+
+</body>
+</html>

@@ -1,0 +1,283 @@
+html {
+	height: 100%;
+}
+
+body {
+	height: 100%;
+	margin: 0 auto;
+	padding: 0;
+	font-family: Helvetica;
+}
+
+.container{
+	height: 100%;
+}
+
+#top-bar{ 
+	height: 8.33%;
+	background-color: green;
+	background-image: url("../img/menu_bar.png");
+	background-size: 100% 100%;
+}
+
+.button{
+	text-align: center;
+	float: left;
+}
+
+#top-button-auto{
+	font-size: 18px;
+	color: white;
+
+	cursor:pointer;
+	width: 21.3%;
+	height: 63.2%;
+	position: relative;
+    left: 28.7%;
+    top: 18.3%;
+	background-image:url("../img/status_not_selected_left.png");
+	background-size: cover;
+}
+
+#top-button-auto.active{
+	background-image:url("../img/status_selected_left.png");
+	background-size: cover;
+}
+
+#top-button-manual{
+	font-size: 18px;
+	color: white;
+
+	cursor:pointer;
+	width: 21.3%;
+	height: 63.2%;
+	position: relative;
+    left: 28.7%;
+    top: 18.3%;
+	background-image:url("../img/status_not_selected_right.png");
+	background-size: cover;
+}
+
+#top-button-manual.active{
+	background-image:url("../img/status_selected_right.png");
+	background-size: cover;
+}
+
+
+
+
+#graph-area{ 
+	height: 41.67%;
+	background-color: red;
+}
+
+#manual-brightness-area{ 
+	height: 41.67%;
+	background-color: blue;
+}
+
+
+
+#middle-bar{ 
+	height: 8.33%;
+	background-color: blue;
+	background-image: url("../img/bar_bottom.png");
+	background-size: cover;
+}
+
+#middle-button-full{
+	font-size: 12px;
+	color: #5f6473;
+
+	cursor:pointer;
+	width: 27.6%;
+	height: 64%;
+	position: relative;
+    left: 18.8%;
+    top: 18%;
+	background-image:url("../img/brightness_not_selected.png");
+	background-size: cover;
+}
+
+#middle-button-full.active{
+	background-image:url("../img/brightness_selected.png");
+	background-size: cover;
+}
+
+#middle-button-off{
+	font-size: 12px;
+	color: #5f6473;
+
+	cursor:pointer;
+	width: 27.6%;
+	height: 64%;
+	position: relative;
+    left: 27%;
+    top: 18%;
+	background-image:url("../img/brightness_not_selected.png");
+	background-size: cover;
+}
+
+#middle-button-off.active{
+	background-image:url("../img/brightness_selected.png");
+	background-size: cover;
+}
+
+
+#color-choices{
+	background-color: #efefef;
+	height: 7.67%;
+	font-size: 12px;
+	padding-top: 10%;
+	padding-left: 10%;
+}
+
+#color-palette-1st{
+	background-color: #efefef;
+	height: 15%;
+	padding-top: 5%;
+	padding-left: 5%;
+	padding-right: 5%;
+	text-align: center;
+}
+
+#color-palette-2nd{
+	background-color: #efefef;
+	height: 15%;
+	padding-top: 5%;
+	padding-left: 5%;
+	padding-right: 5%;
+}
+
+.color-cell{
+	float: left;
+	width: 20%;
+	height: 100%;
+	text-align: center;
+}
+
+.color-button{
+	text-align: center;
+	float: left;
+	cursor:pointer;
+	width: 80%;
+	height: 60%;
+	position: relative;
+    left: 10%;
+    top: 0%;
+}
+
+#white-button{
+	background-color: white;
+}
+
+#white-button.active{
+	border-style: solid;
+	border-color: darkgrey;
+	border-width: 3px;
+}
+
+#yellow-button{
+	background-color: #ffe11a;
+}
+
+#yellow-button.active{
+	border-style: solid;
+	border-color: darkgrey;
+	border-width: 3px;
+}
+
+#orange-button{
+	background-color: #f97302;
+}
+
+#orange-button.active{
+	border-style: solid;
+	border-color: darkgrey;
+	border-width: 3px;
+}
+
+#pink-button{
+	background-color: #fa74ef;
+}
+
+#pink-button.active{
+	border-style: solid;
+	border-color: darkgrey;
+	border-width: 3px;
+}
+
+#red-button{
+	background-color: #e64416;
+}
+
+#red-button.active{
+	border-style: solid;
+	border-color: darkgrey;
+	border-width: 3px;
+}
+
+
+#turquoise-button{
+	background-color: #60e7ce;
+}
+
+#turquoise-button.active{
+	border-style: solid;
+	border-color: darkgrey;
+	border-width: 3px;
+}
+
+#blue-button{
+	background-color: #4cb8e9;
+}
+
+#blue-button.active{
+	border-style: solid;
+	border-color: darkgrey;
+	border-width: 3px;
+}
+
+#green-button{
+	background-color: #95d032;
+}
+
+#green-button.active{
+	border-style: solid;
+	border-color: darkgrey;
+	border-width: 3px;
+}
+
+#purple-button{
+	background-color: #8746e0;
+}
+
+#purple-button.active{
+	border-style: solid;
+	border-color: darkgrey;
+	border-width: 3px;
+}
+
+#add-button{
+	background-image:url("../img/add.png");
+	background-size: cover;
+}
+
+
+
+#bottom-margin{
+	height: 4%;
+	background-color: #efefef;
+}
+
+
+
+
+
+
+#temp_addColor{
+	height: 100%;
+	width: 100%;
+	background-image:url("../img/color_choice_bg.png");
+	background-size: cover;
+}

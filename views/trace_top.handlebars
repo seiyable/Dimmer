@@ -1,0 +1,31 @@
+<h3>Enter the destination</h3>
+<p>
+Enter a destination domain.
+{{#if invalid_domain}}
+<b>The domain is invalid. Try another one.</b>
+{{/if}}
+<form method="post" action="/">
+	<p>Destination: <input type="text" value="{{destination}}" name="destination" /></p>
+	<button type="submit">Traceroute</button>
+</form>
+
+{{#if ipinfo}}
+<h3>Result</h3>
+<p>
+The traceroute from your laptop to the destination({{destination}}) is shown as below.
+</p>
+
+<ol>
+{{#each ipinfo}}
+	<li>
+	<ul>
+	{{#each this}}
+		<li>
+  		{{@key}}: {{this}}
+  		</li>
+  	{{/each}}
+  	</ul>
+  	</li>
+{{/each}}
+</ol>
+{{/if}}

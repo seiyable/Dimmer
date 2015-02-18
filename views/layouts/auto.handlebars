@@ -1,0 +1,110 @@
+<div class="container">
+  <div class="row" id="top-bar">
+    <div class="button active" id="top-button-auto">Auto
+    </div>
+    <div class="button" id="top-button-manual">Manual
+    </div>
+  </div><!-- top-bar -->
+  <div class="row" id="graph-area">
+  </div><!-- graph-area -->
+  <div class="row" id="middle-bar">
+    <div class="button" id="middle-button-full">Full Brightness
+    </div>
+    <div class="button" id="middle-button-off">Turn Off
+    </div>
+  </div><!-- middle-bar -->
+  <div class="row" id="color-choices"><p>Color Choices:</p></div><!-- color-choices -->
+  <div class="row" id="color-palette-1st">
+    <div class="color-cell" id="white">
+      <p>White</p>
+      <div class="color-button active" id="white-button"></div>
+    </div>
+    <div class="color-cell" id="yellow">
+      <p>Yellow</p>
+      <div class="color-button" id="yellow-button"></div>
+    </div>
+    <div class="color-cell" id="orange">
+      <p>Orange</p>
+      <div class="color-button" id="orange-button"></div>
+    </div>  
+    <div class="color-cell" id="pink">
+      <p>Pink</p>
+      <div class="color-button" id="pink-button"></div>
+    </div>
+    <div class="color-cell" id="red">
+      <p>Red</p>
+      <div class="color-button" id="red-button"></div>
+    </div>
+  </div><!-- color-pallete-1st -->
+  <div class="row" id="color-palette-2nd">
+    <div class="color-cell" id="turquoise">
+    <p>Turquoise</p>
+      <div class="color-button" id="turquoise-button"></div>
+    </div>
+    <div class="color-cell" id="blue">
+      <p>Blue</p>
+      <div class="color-button" id="blue-button"></div>
+    </div>
+    <div class="color-cell" id="green">
+      <p>Green</p>
+      <div class="color-button" id="green-button"></div>
+    </div>  
+    <div class="color-cell" id="purple">
+      <p>Purple</p>
+      <div class="color-button" id="purple-button"></div>
+    </div>
+    <div class="color-cell" id="add">
+      <p>Add</p>
+      <div class="color-button" id="add-button"></div>
+    </div>
+  </div><!-- color-pallete-end -->
+  <div class="row" id="bottom-margin">
+  </div><!-- color-pallete-end -->
+</div><!-- container -->
+
+
+<!-- load p5.js library -->
+<script src = "js/p5.min.js"></script>
+<script src = "js/wrapper.js"></script>
+<script>
+$(document).ready(function () {
+  //when user clicks a button on the top bar, toggle it
+  $("#top-button-auto").click(function(){
+    $(this).toggleClass("active");
+    $("#top-button-manual").toggleClass("active");
+
+    window.location.href = '/auto';
+  });
+  $("#top-button-manual").click(function(){
+    $(this).toggleClass("active");
+    $("#top-button-auto").toggleClass("active");
+
+    window.location.href = '/manual';
+  });
+
+
+  //when user clicks a button on the middle bar, toggle it
+  $("#middle-button-full").click(function(){
+    $(this).toggleClass("active");
+    $("#middle-button-off").removeClass("active");
+  });
+  $("#middle-button-off").click(function(){
+    $(this).toggleClass("active");
+    $("#middle-button-full").removeClass("active");
+  });
+
+
+  //when user clicks a button on color buttons, show the indicator
+  $(".color-button").click(function(){
+    $(".color-button").removeClass("active");
+    $(this).toggleClass("active");
+  });
+
+
+  //when user clicks the add button in the color palette, take him to the color setting page
+  $("#add-button").click(function(){
+    window.location.href = '/addColor';
+  });
+
+});
+</script>
