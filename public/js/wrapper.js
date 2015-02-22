@@ -57,12 +57,16 @@ function draw() {
 }
 
 function mouseDragged(){
+	console.log("mouse is dragged");
 	var r = 0.05 * width;
 	if (abs(mouseX - width * point2_x) < r && abs(mouseY - height * point2_y) < r){
-		if(mouseReleased()){
-			if(mouseX > 0 && mouseX < width){
-				point2_x = mouseX / width;
-			}
-		}
+		console.log("on the left ball");
+
+		point2_y = mouseY / height;
+		console.log(point2_y);
 	}
+}
+
+function mouseClicked() {
+	console.log("clicked");
 }
