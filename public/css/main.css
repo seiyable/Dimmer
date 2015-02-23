@@ -23,10 +23,15 @@ body {
 .button{
 	text-align: center;
 	float: left;
+
+	padding-top: 10px;
+	letter-spacing: 0.1em;
 }
 
+
+
 #top-button-auto{
-	font-size: 18px;
+	font-size: 16px;
 	color: white;
 
 	cursor:pointer;
@@ -37,6 +42,9 @@ body {
     top: 18.3%;
 	background-image:url("../img/status_not_selected_left.png");
 	background-size: cover;
+
+	padding-top: 8px;
+
 }
 
 #top-button-auto.active{
@@ -45,7 +53,7 @@ body {
 }
 
 #top-button-manual{
-	font-size: 18px;
+	font-size: 16px;
 	color: white;
 
 	cursor:pointer;
@@ -56,6 +64,8 @@ body {
     top: 18.3%;
 	background-image:url("../img/status_not_selected_right.png");
 	background-size: cover;
+
+	padding-top: 8px;
 }
 
 #top-button-manual.active{
@@ -68,19 +78,21 @@ body {
 
 #graph-area{ 
 	height: 41.67%;
-	background-color: red;
+	/*background-color: red;*/
+	/*background-image: url('../img/graph_bg.png');
+	background-size: 100% 120%;*/
 }
 
 #manual-brightness-area{ 
 	height: 41.67%;
-	background-color: blue;
+	/*background-color: blue;*/
 }
 
 
 
 #middle-bar{ 
 	height: 8.33%;
-	background-color: blue;
+	/*background-color: blue;*/
 	background-image: url("../img/bar_bottom.png");
 	background-size: cover;
 }
@@ -102,6 +114,8 @@ body {
 #middle-button-full.active{
 	background-image:url("../img/brightness_selected.png");
 	background-size: cover;
+
+	color:white;
 }
 
 #middle-button-off{
@@ -121,6 +135,8 @@ body {
 #middle-button-off.active{
 	background-image:url("../img/brightness_selected.png");
 	background-size: cover;
+
+	color: white;
 }
 
 
@@ -160,11 +176,19 @@ body {
 	text-align: center;
 	float: left;
 	cursor:pointer;
-	width: 80%;
+	width: 75%;
 	height: 60%;
 	position: relative;
     left: 10%;
     top: 0%;
+
+    border-radius: 5px;
+}
+
+.colorName{
+	color: #5f6473;
+	font-size: 12px;
+	margin-left: -5px;
 }
 
 #white-button{
@@ -173,7 +197,7 @@ body {
 
 #white-button.active{
 	border-style: solid;
-	border-color: darkgrey;
+	border-color: #5f6473;
 	border-width: 3px;
 }
 
@@ -183,7 +207,7 @@ body {
 
 #yellow-button.active{
 	border-style: solid;
-	border-color: darkgrey;
+	border-color: #5f6473;
 	border-width: 3px;
 }
 
@@ -193,7 +217,7 @@ body {
 
 #orange-button.active{
 	border-style: solid;
-	border-color: darkgrey;
+	border-color: #5f6473;
 	border-width: 3px;
 }
 
@@ -203,7 +227,7 @@ body {
 
 #pink-button.active{
 	border-style: solid;
-	border-color: darkgrey;
+	border-color: #5f6473;
 	border-width: 3px;
 }
 
@@ -213,7 +237,7 @@ body {
 
 #red-button.active{
 	border-style: solid;
-	border-color: darkgrey;
+	border-color: #5f6473;
 	border-width: 3px;
 }
 
@@ -224,7 +248,7 @@ body {
 
 #turquoise-button.active{
 	border-style: solid;
-	border-color: darkgrey;
+	border-color: #5f6473;
 	border-width: 3px;
 }
 
@@ -234,7 +258,7 @@ body {
 
 #blue-button.active{
 	border-style: solid;
-	border-color: darkgrey;
+	border-color: #5f6473;
 	border-width: 3px;
 }
 
@@ -244,7 +268,7 @@ body {
 
 #green-button.active{
 	border-style: solid;
-	border-color: darkgrey;
+	border-color: #5f6473;
 	border-width: 3px;
 }
 
@@ -254,7 +278,7 @@ body {
 
 #purple-button.active{
 	border-style: solid;
-	border-color: darkgrey;
+	border-color: #5f6473;
 	border-width: 3px;
 }
 
@@ -272,12 +296,28 @@ body {
 
 
 
-
-
+/********* ADD NEW page *******/
 
 #temp_addColor{
 	height: 100%;
 	width: 100%;
 	background-image:url("../img/color_choice_bg.png");
-	background-size: cover;
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	text-align: center\;
+	/*background-size: cover;*/
+	position: absolute;
 }
+#back{
+	position: absolute;
+	margin-top: 30px;
+}
+
+#saveColorName{
+	top: 150px;
+	text-align: center;
+	background-color: yellow;
+}
+
+	#typing{
+	}

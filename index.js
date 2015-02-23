@@ -9,7 +9,6 @@ var express = require('express');
 var exphbs  = require('express3-handlebars');
 var app = express();
 var bodyParser = require('body-parser');
-var hue = require("node-hue-api");
 
 //use static local files
 app.use(express.static(__dirname + '/public'));
@@ -19,24 +18,6 @@ app.set('view engine', 'handlebars');
 //body parser
 app.use(bodyParser());
 
-//================================================
-//hue settings
-var displayBridges = function(bridge) {
-    console.log("Hue Bridges Found: " + JSON.stringify(bridge));
-};
-
-// --------------------------
-// Using a promise
-hue.nupnpSearch().then(displayBridges).done();
-
-// --------------------------
-/*
-// Using a callback
-hue.nupnpSearch(function(err, result) {
-    if (err) throw err;
-    displayBridges(result);
-});
-*/
 //================================================
 
 //response to the GET request for the AUTO page
