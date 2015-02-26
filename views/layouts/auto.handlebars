@@ -65,8 +65,9 @@
 
 <!-- load p5.js library -->
 <script src = "js/p5.min.js"></script>
-<script src = "js/wrapper.js"></script>
+<script src = "js/auto_canvas.js"></script>
 <script src = "js/hex-to-rgb.min.js"></script>
+<script src='js/tinycolor.js'></script>
 {{!-- <script src= "js/manual_canvas.js"></script> --}}
 
 <script>
@@ -90,10 +91,54 @@ $(document).ready(function () {
   $("#middle-button-full").click(function(){
     $(this).toggleClass("active");
     $("#middle-button-off").removeClass("active");
+
+    //Post request to server
+    if($(this).hasClass("active")){
+      //$.post( "/hueapi/turnOnOff", { state : "on"} );
+
+      $.ajax({
+        type: "post",
+        url: "/hueapi/turnOnOff",
+        data: { state : "on"},
+        success: function(data){alert(data);}
+      });
+
+    } else {
+      //turn it back to initial color
+      // $.post( "/hueapi/changeColor", { selectedColorId : selectedColorId} );
+      $.ajax({
+        type: "post",
+        url: "/hueapi/changeColor",
+        data: { selectedColorId : selectedColorId},
+        success: function(data){alert(data);}
+      });
+    }
   });
   $("#middle-button-off").click(function(){
     $(this).toggleClass("active");
     $("#middle-button-full").removeClass("active");
+
+    //Post request to server
+    if($(this).hasClass("active")){
+      //$.post( "/hueapi/turnOnOff", { state : "off"} );
+
+      $.ajax({
+        type: "post",
+        url: "/hueapi/turnOnOff",
+        data: { state : "off"},
+        success: function(data){alert(data);}
+      });
+    } else {
+      //turn it back to initial color
+      //$.post( "/hueapi/changeColor", { selectedColorId : selectedColorId} );
+
+      $.ajax({
+        type: "post",
+        url: "/hueapi/changeColor",
+        data: { selectedColorId : selectedColorId},
+        success: function(data){alert(data);}
+      });
+    }
   });
 
 
@@ -102,13 +147,36 @@ $(document).ready(function () {
     $(".color-button").removeClass("active");
     $(this).toggleClass("active");
 
-    colorSelected = $(this).css("background-color");
-    colorSelected = $(this).css("backgroundColor").toString().match(/\d+/g);
-    colorSelected = "#"+colorSelected.map(function(t){return ("0"+(t|0).toString(16)).substr(-2)}).join("");
+    if($(this).attr("id") == "add-button"){
+      //do nothing
+    } else {
+      //take the background color of the button
+      colorSelected = $(this).css("background-color");
+      colorSelected = $(this).css("backgroundColor").toString().match(/\d+/g);
+      colorSelected = "#"+colorSelected.map(function(t){return ("0"+(t|0).toString(16)).substr(-2)}).join("");
 
-    colorSelected = hexToRgb(colorSelected);
+      colorSelected = hexToRgb(colorSelected);
 
-    //console.log(colorSelected);
+      var string = "rgb " + colorSelected.r + " " + colorSelected.g + " " + colorSelected.b;
+      colorSelected = tinycolor(string).toHsv();
+      colorSelected.s = colorSelected.s * 100;
+      colorSelected.v = colorSelected.v * 100;
+
+    //Post request to node server
+    //   $.post( "/hueapi/changeColor", { selected_h : colorSelected.h, selected_s : colorSelected.s, selected_v : colorSelected.v} );
+    // }
+      selectedColorId = $(this).attr("id");
+      // $.post( "/hueapi/changeColor", { selectedColorId : selectedColorId} );
+
+          $.ajax({
+            type: "post",
+            url: "/hueapi/changeColor",
+            data: { selectedColorId : selectedColorId},
+            success: function(data){
+              alert(data);
+            }
+          });
+      }
   });
 
 
