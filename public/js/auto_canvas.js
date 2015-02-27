@@ -17,40 +17,46 @@ The image shown below represents which point is which.
         <5>   <6>
 
 
-The canvas size is responsive and determined by window size of the browser.
-So, each variable for defining some length is represented not in px but in percentage of the canvas size.
+X-axis represents time, and Y-axis represents brightness.
+Axis of the time starts at 12:00pm(left edge) and ends at 11:59am(right edge)
+The value for time(ex: pt2_time) is in the range of 0 ~ 24. 1 represents 1 hour.
+The value for brightness(ex: pt_bri) is in the range of 0 ~ 100.
 
 */
 
 //=========== global variables ===========
 //graph area
-var graph_originX = 0.06, graph_originY = 0.87; //coordinates of the graph's origin point
-var graph_topY = 0.05; //top of the graph area
-var graph_maxY = 0.1; //if a point has max value, where is it dipicted?
+var graphAreaWidth, graphAreaHeight; //actual size of graph area
 
 //points
-var point2_x = 0.2, point2_y = graph_maxY; //initial coordinates of point 2
-var point1_x = graph_originX, point1_y = point2_y; //initial coordinates of point 1
-var point3_x = 0.8, point3_y = 0.8; //initial coordinates of point 3
-var point4_x = 1.0, point4_y = point3_y; //initial coordinates of point 4
-var point5_x = point2_x, point5_y = graph_originY; //initial coordinates of point 5
-var point6_x = point3_x, point6_y = graph_originY; //initial coordinates of point 6
+var pt2_time = 9,        pt2_bri = 100; //initial values of point 2
+var pt1_time = 0,        pt1_bri = pt2_bri; //initial values of point 1
+var pt3_time = 12,       pt3_bri = 10; //initial values of point 3
+var pt4_time = 24,       pt4_bri = pt3_bri; //initial values of point 4
+var pt5_time = pt2_time, pt5_bri = 0; //initial values of point 5
+var pt6_time = pt3_time, pt6_bri = 0; //initial values of point 6
 
-//current time bar
-var currentTimeBarX = 0.5; //X coordinate of current time bar
+//current time
+var currentTime = 2; //holding current time
 
 // images
-var backImage;
-var arrow_left_right;
-var arrow_up_down;
+var bgImage, arrowImageLR, arrowImageUD; //image data
+var bgImageX; //the X position of bg image
+var original_ImageWidth   = 6179, original_ImageHeight    = 800; //original size
+var original_LeftGap      = 66,   original_RightGap       = 6114; //original gap size
+var original_TopGap       = 66,   original_BottomGap      = 696; //original gap size
+var original_HalfHourDist = 126,  original_Bri100pcntDist = 126*5; //original distance length btw each dotted line
+var actual_BgImageWidth, actual_BgImageHeight; //actual size
+
+//constants for positioning points on the background image
+var pm1200startX, am1159endX, graphBottomGap, halfHourDist, bri100pcntDist;
 
 //=========== setup() ===========
 function setup() {
 	//create a canvas
-	var graphAreaWidth = $("#graph-area").width(); //get the width of the parent div
-	var graphAreaHeight = $("#graph-area").height(); //get the height of the parent div
-	console.log("height: " + graphAreaHeight + " width: " + graphAreaWidth);
-  	var myCanvas = createCanvas(graphAreaWidth, graphAreaHeight); //create the canvas with those values
+	graphAreaWidth  = $("#graph-area").width(); //get the width of the parent div
+	graphAreaHeight = $("#graph-area").height(); //get the height of the parent div
+  	var myCanvas    = createCanvas(graphAreaWidth, graphAreaHeight); //create the canvas with those values
 
   	//move the canvas inside the div of graph-area
   	myCanvas.id("graph");
@@ -58,129 +64,217 @@ function setup() {
   	$("#graph").removeAttr("style");
 
   	//load images
-	backImage = loadImage("../img/graph.png");
-	arrow_left_right=loadImage("../img/arrow_left_right.png");
-    arrow_up_down = loadImage("../img/arrow_up.png");
+	bgImage      = loadImage("../img/graph.png");
+	arrowImageLR = loadImage("../img/arrow_left_right.png");
+    arrowImageUD = loadImage("../img/arrow_up.png");
 
     //change color mode
     colorMode(HSB, 359, 100, 100, 100);
+
+    //set constant values
+    actual_BgImageHeight = graphAreaHeight;
+    var compressedRate   = actual_BgImageHeight / original_ImageHeight;
+    actual_BgImageWidth  = original_ImageWidth     * compressedRate;
+    pm1200startX         = original_LeftGap        * compressedRate;
+    am1159endX           = original_RightGap       * compressedRate;
+    graphBottomGap       = original_BottomGap      * compressedRate;
+    halfHourDist         = original_HalfHourDist   * compressedRate;
+    bri100pcntDist       = original_Bri100pcntDist * compressedRate;
+
+    //set initial x position of bg image
+    bgImageX = -getXonBg(8);
 
 }
 
 //=========== draw() ===========
 function draw() {
-	//set the background image
-	var graphAreaWidth = $("#graph-area").width(); //get the width of the parent div
-	var graphAreaHeight = $("#graph-area").height(); //get the height of the parent div
-	var compressedRate = graphAreaHeight/800; //get the compressed rate of bg image (original size is 6179*800)
-	image(backImage, 0, 0, 6179*compressedRate, graphAreaHeight);
+	setBackgroundImage();
+	fillTheGraph();
+	drawLines();
+	displayLabels();
+	setArrowImages();
+	updateValues();
+}
 
-	//fill the graph
-	noStroke();
-	fill(colorSelected.h, colorSelected.s, colorSelected.v, 60); //fill is same color as the selected color button
-	rect(point1_x * width, point1_y * height, (point2_x - point1_x) * width, (graph_originY - point1_y) * height); //rectangle at left side
-	rect(point3_x * width, point3_y * height, (width - point3_x) * width, (graph_originY - point3_y) * height); // rectangle at right side
-
-	if(point2_y < point3_y){
-		//when point2 is at left to point3
-		rect(point2_x * width, point3_y * height, (point3_x - point2_x) * width, (graph_originY - point3_y) * height);
-		triangle(point2_x * width, point2_y * height, point3_x * width, point3_y * height, point2_x * width, point3_y * height);
-	} else {
-		//when point2 is at left to point3
-		rect(point2_x * width, point2_y * height, (point3_x - point2_x) * width, (graph_originY - point2_y) * height);
-		triangle(point2_x * width, point2_y * height, point3_x * width, point3_y * height, point3_x * width, point2_y * height);
+//=========== setBackgroundImage() ===========
+//set the background image
+function setBackgroundImage(){
+	if(bgImageX > 0){
+		//fix the bgImage position if it is out of range
+		bgImageX = 0;
+	} else if(bgImageX < graphAreaWidth - actual_BgImageWidth){
+		//fix the bgImage position if it is out of range
+		bgImageX = graphAreaWidth - actual_BgImageWidth;	
 	}
-	stroke(1);
+	push();
+	translate(bgImageX, 0);
+	image(bgImage, 0, 0, actual_BgImageWidth, graphAreaHeight); //set bg image
+	pop();
+}
+
+//=========== fillTheGraph() ===========
+//fill the graph with the selected color
+function fillTheGraph(){
+	push();
+	translate(bgImageX, 0);
+
+	noStroke();
+	fill(colorSelected.h, colorSelected.s, colorSelected.v, 60); //"colorSelected" instance is passed from html
+	rect(getXonBg(pt1_time), getYonBg(pt1_bri), getXonBg(pt2_time) - getXonBg(pt1_time), getYonBg(0) - getYonBg(pt1_bri)); //rectangle at the left side
+	rect(getXonBg(pt3_time), getYonBg(pt3_bri), getXonBg(pt4_time) - getXonBg(pt3_time), getYonBg(0) - getYonBg(pt3_bri)); //triangle at the top
+
+	if(pt2_bri > pt3_bri){
+		//when point2 is greater than point3
+		rect(getXonBg(pt2_time), getYonBg(pt3_bri), getXonBg(pt3_time) - getXonBg(pt2_time), getYonBg(0) - getYonBg(pt3_bri)); //rectangle at the bottom
+		triangle(getXonBg(pt2_time), getYonBg(pt2_bri), getXonBg(pt3_time), getYonBg(pt3_bri), getXonBg(pt2_time), getYonBg(pt3_bri)); //triangle at the top
+	} else {
+		//when point2 is smaller than point3
+		rect(getXonBg(pt2_time), getYonBg(pt2_bri), getXonBg(pt3_time) - getXonBg(pt2_time), getYonBg(0) - getYonBg(pt2_bri)); //rectangle at the bottom
+		triangle(getXonBg(pt2_time), getYonBg(pt2_bri), getXonBg(pt3_time), getYonBg(pt3_bri), getXonBg(pt3_time), getYonBg(pt2_bri)); //triangle at the top
+	}
+
+	pop();
+}
+
+//=========== drawLines() ===========
+function drawLines(){
+	fill(40);
+	stroke(40);
+
+	push();
+	translate(bgImageX, 0);
 
 	//draw current time bar
-	line(width * currentTimeBarX, height * graph_maxY, width * currentTimeBarX, height * graph_originY);
+	line(getXonBg(currentTime), getYonBg(0), getXonBg(currentTime), getYonBg(100));
+	//draw vertical lines
+	line(getXonBg(pt2_time), getYonBg(pt2_bri), getXonBg(pt5_time), getYonBg(pt5_bri));
+	line(getXonBg(pt3_time), getYonBg(pt3_bri), getXonBg(pt6_time), getYonBg(pt6_bri));
+	
+	pop();
 
 	//draw axis
-	line(width * graph_originX, height * graph_topY, width * graph_originX, height * graph_originY);
-	line(width * graph_originX, height * graph_originY, width, height * graph_originY);
+	line(0.08*width, getYonCv(102), 0.08*width, getYonCv(0)); //Y-axis
+	line(0.08*width, getYonCv(0), width, getYonCv(0)); //X-axis
+}
 
-	//draw vertical lines
-	line(width * point2_x, height * point2_y, width * point5_x, height * point5_y);
-	line(width * point3_x, height * point3_y, width * point6_x, height * point6_y);
+//=========== displayLabels() ===========
+function displayLabels(){
+	//display labels for Y-axis
+	fill(40);
+	stroke(40);
+	strokeWeight(0.1);
+	textSize(0.04*height);
+	text("brightness", 0.02*width, getYonCv(105));
+	textSize(0.02*height);
+	text("100", 0.02*width, getYonCv(95));
+	text(" 80", 0.02*width, getYonCv(75));
+	text(" 60", 0.02*width, getYonCv(55));
+	text(" 40", 0.02*width, getYonCv(35));
+	text(" 20", 0.02*width, getYonCv(15));
+}
+
+//=========== setArrowImages() ===========
+function setArrowImages(){
+	push();
+	translate(bgImageX, 0);
 
 	//draw up & down arrow images
 	push();
-	translate(-arrow_up_down.width/4, -arrow_up_down.height/4 - 0.02*height); //adjust the position
-	image(arrow_up_down, width * point2_x, height * point2_y, arrow_up_down.width/2, arrow_up_down.height/2);//arrow image for point 2
-	image(arrow_up_down, width * point3_x, height * point3_y, arrow_up_down.width/2, arrow_up_down.height/2);//arrow image for point 3
+	translate(-arrowImageUD.width/4, arrowImageUD.height/4 - 0.015*height); //adjust the position
+	image(arrowImageUD, getXonBg(pt2_time), getYonBg(pt2_bri), arrowImageUD.width/2, -arrowImageUD.height/2);//arrow image for point 2
+	image(arrowImageUD, getXonBg(pt3_time), getYonBg(pt3_bri), arrowImageUD.width/2, -arrowImageUD.height/2);//arrow image for point 3
 	pop();
 
 	//draw left & right arrow images
 	push();
-	translate(-arrow_left_right.width/4, -arrow_left_right.height/4);//adjust the position
-	image(arrow_left_right, width*point5_x, height * graph_originY, arrow_left_right.width/2,arrow_left_right.height/2);//arrow image for point 5	
-	image(arrow_left_right, width*point6_x, height * graph_originY, arrow_left_right.width/2, arrow_left_right.height/2);//arrow image for point 6
+	translate(-arrowImageLR.width/4, arrowImageLR.height/4);//adjust the position
+	image(arrowImageLR, getXonBg(pt5_time), getYonBg(0), arrowImageLR.width/2, -arrowImageLR.height/2);//arrow image for point 5	
+	image(arrowImageLR, getXonBg(pt6_time), getYonBg(0), arrowImageLR.width/2, -arrowImageLR.height/2);//arrow image for point 6
 	pop();
 
-	//reset the value of current brightness
-	currentBrightness = ((graph_originY - point2_y) / (graph_originY - graph_maxY)) * 100;
+	pop();
 }
 
+//=========== updateValues() ===========
+function updateValues(){
+	//reset the value of current brightness
+	currentBrightness = pt2_bri;
+}
+
+
+//=========== mouseDragged() ===========
+//when you drag your mouse on the canvas
 function mouseDragged(){
-	//dragging on background
+	var r = getXonBg(0.25); //acceptable range for dragging a point
+
+	//dragging on point2 --------------------
+	//when your mouse cursor is in the range of the point 2
+	if (abs(mouseX - getXonCv(pt2_time)) < r && abs(mouseY - getYonCv(pt2_bri)) < r){
+		//change the position of the point only when its within the graph
+		if(mouseY < getYonCv(0) && mouseY > getYonCv(100)){
+			pt2_bri = getBri(mouseY);
+        	pt1_bri = pt2_bri;
+        	console.log("pt2_bri is reset to: " + pt2_bri);
+    	}
+	}
+	//dragging on point3 --------------------
+	//when your mouse cursor is in the range of the point 3
+	else if (abs(mouseX - getXonCv(pt3_time)) < r && abs(mouseY - getYonCv(pt3_bri)) < r){
+		//change the position of the point only when its within the graph
+		if(mouseY < getYonCv(0) && mouseY >getYonCv(100)){	
+			pt3_bri = getBri(mouseY);
+        	pt4_bri = pt3_bri;
+        	console.log("pt3_bri is reset to: " + pt3_bri);
+    	}
+	}
+	//dragging on point5 --------------------
+	//when your mouse cursor is in the range of the point 5
+	else if (abs(mouseX - getXonCv(pt5_time)) < r && abs(mouseY - getYonCv(pt5_bri)) < r){
+		//change the position of the point only when its within the graph
+		if(getTime(mouseX) > 0 && mouseX < getXonCv(pt6_time) - r){	
+			pt5_time = getTime(mouseX);
+	        pt2_time = pt5_time;
+	        console.log("pt5_time is reset to: " + pt5_time);
+	    }
+	}
+	//dragging on point6 --------------------
+	//when your mouse cursor is in the range of the point 6
+	else if (abs(mouseX - getXonCv(pt6_time)) < r && abs(mouseY - getYonCv(pt6_bri)) < r){
+		//change the position of the point only when its within the graph
+		if(mouseX > getXonCv(pt5_time) + r && getTime(mouseX) < 24){	
+			pt6_time = getTime(mouseX);
+	        pt3_time = pt6_time;
+	        console.log("pt6_time is reset to: " + pt6_time);
+	    }
+	}
+	//dragging on background --------------------
+	//when your mouse cursor is on the bg image, not on any points
+	else if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+		//scroll the graph
+		scrollTheGraph();
+	}
+}
+
+//=========== scrollTheGraph() ===========
+//scroll the graph
+function scrollTheGraph(){
+	//if bg image is set within valid area
+	if(bgImageX <= 0 && bgImageX >= graphAreaWidth - actual_BgImageWidth){
+		//update the position of back ground image
+		var delta = mouseX - pmouseX;
+		bgImageX += delta;
+
+		console.log("bgImageX is relocated at: " + bgImageX);
+	} 
+}
+/*
+//=========== mouseReleased() ===========
+//when you relase your clicked mouse on the canvas
+function mouseReleased(){
 
 	//dragging on point2
-	var r = 0.1 * width; //acceptable range for dragging a ball
-	if (abs(mouseX - width * point2_x) < r && abs(mouseY - height * point2_y) < r){
-		//when your mouse cursor is in the range of the point 2
-		console.log("dragging the point 2");
-
-		if(mouseY < graph_originY * height && mouseY > graph_maxY * height){	
-			point2_y = mouseY / height;
-        	point1_y = point2_y;
-    	}
-	
-	}
-
-	//dragging on point3
-	if (abs(mouseX - width * point3_x) < r && abs(mouseY - height * point3_y) < r){
-		//when your mouse cursor is in the range of the point 3
-		console.log("dragging the point 3");
-
-		if(mouseY < graph_originY * height && mouseY > graph_maxY * height){	
-			point3_y = mouseY / height;
-        	point4_y = point3_y;
-    	}
-		
-	}
-
-	//dragging on point5
-	if (abs(mouseX - width * point5_x) < r && abs(mouseY - height * point5_y) < r){
-		//when your mouse cursor is in the range of the point 5
-		console.log("dragging the point 5");
-
-		if(mouseX > graph_originX * width && mouseX < point6_x * width - r){	
-			point5_x = mouseX / width;
-	        point2_x = point5_x;
-	    }
-		
-	}
-
-	//dragging on point6
-	if (abs(mouseX - width * point6_x) < r && abs(mouseY - height * point6_y) < r){
-		//when your mouse cursor is in the range of the point 6
-		console.log("dragging the point 6");
-
-		if(mouseX > point5_x * width + r && mouseX < width){	
-			point6_x = mouseX / width;
-	        point3_x = point6_x;
-	    }
-		
-	}	
-}
-
-
-function mouseReleased(){
-	console.log("mouse is released");
-
-	//dragging point2
-	var r = 0.1 * width;
-	if (abs(mouseX - width * point2_x) < r && abs(mouseY - height * point2_y) < r){
+	var r = 0.1 * width;//acceptable range for dragging a point
+	if (abs(mouseX - width * pt2_time) < r && abs(mouseY - height * pt2_bri) < r){
 		console.log("on the point 2 ball");
 
 		//$.post( "/hueapi/changeBri", { brightness : currentBrightness} );
@@ -193,14 +287,66 @@ function mouseReleased(){
               alert(data);
             }
           });
-	
 	}
+}
+*/
+//=========== windowResized() ===========
+//when the browser window is resized
+function windowResized() {
+	//resize the canvas size
+	graphAreaWidth  = $("#graph-area").width();//get the width of the parent div
+	graphAreaHeight = $("#graph-area").height();//get the height of the parent div
+	resizeCanvas(graphAreaWidth, graphAreaHeight);
+
+	//update constant values
+	actual_BgImageHeight = graphAreaHeight;
+	var compressedRate   = actual_BgImageHeight / original_ImageHeight;
+	actual_BgImageWidth  = original_ImageWidth     * compressedRate;
+ 	pm1200startX         = original_LeftGap        * compressedRate;
+	am1159endX           = original_RightGap       * compressedRate;
+	graphBottomGap       = original_BottomGap      * compressedRate;
+	halfHourDist         = original_HalfHourDist   * compressedRate;
+	bri100pcntDist       = original_Bri100pcntDist * compressedRate;
 }
 
 
-function windowResized() {
-  var graphAreaWidth = $("#graph-area").width();
-  var graphAreaHeight = $("#graph-area").height();
-  resizeCanvas(graphAreaWidth, graphAreaHeight);
+
+
+
+/*=======================  basic functions  =======================*/
+//=========== getXonBg() ===========
+//returns the X position on the background image   //origin is (pm1200startX, graphBottomGap)
+function getXonBg(_time){
+	return  pm1200startX + _time*halfHourDist*2;
+}
+
+//=========== getXonCv() ===========
+//returns the X position on the canvas   //origin is (0, 0)
+function getXonCv(_time){
+	return getXonBg(_time) + bgImageX;
+}
+
+//=========== getYonBg() ===========
+//returns the Y position on the background image   //origin is (pm1200startX, graphBottomGap)
+function getYonBg(_bri){
+	return graphBottomGap - (_bri/100)*bri100pcntDist;
+}
+
+//=========== getYonCv() ===========
+//returns the Y position on the canvas   //origin is (0, 0)
+function getYonCv(_bri){
+	return getYonBg(_bri);
+}
+
+//=========== getTime() ===========
+//returns time value according to X position on the canvas
+function getTime(_xOnCv){
+	return (_xOnCv - pm1200startX - bgImageX) / (halfHourDist*2);
+}
+
+//=========== getBri() ===========
+//returns brightness value according to Y position on the canvas
+function getBri(_yOnCv){
+	return (graphBottomGap - _yOnCv) / bri100pcntDist * 100
 }
 
