@@ -1,65 +1,75 @@
 <div class="container">
-  <div class="row" id="top-bar">
-    <div class="button active" id="top-button-auto">Auto
-    </div>
-    <div class="button" id="top-button-manual">Manual
-    </div>
-  </div><!-- top-bar -->
-  <div class="row" id="graph-area">
-  </div><!-- graph-area -->
-  <div class="row" id="middle-bar">
-    <div class="button" id="middle-button-full">Full Brightness
-    </div>
-    <div class="button" id="middle-button-off">Turn Off
-    </div>
-  </div><!-- middle-bar -->
-  <div class="row" id="color-choices"><p class="colorName">Color Choices:</p></div><!-- color-choices -->
-  <div class="row" id="color-palette-1st">
-    <div class="color-cell" id="white">
-      <p class="colorName">White</p>
-      <div class="color-button active" id="white-button"></div>
-    </div>
-    <div class="color-cell" id="yellow">
-      <p class="colorName">Yellow</p>
-      <div class="color-button" id="yellow-button"></div>
-    </div>
-    <div class="color-cell" id="orange">
-      <p class="colorName">Orange</p>
-      <div class="color-button" id="orange-button"></div>
-    </div>  
-    <div class="color-cell" id="pink">
-      <p class="colorName">Pink</p>
-      <div class="color-button" id="pink-button"></div>
-    </div>
-    <div class="color-cell" id="red">
-      <p class="colorName">Red</p>
-      <div class="color-button" id="red-button"></div>
-    </div>
-  </div><!-- color-pallete-1st -->
-  <div class="row" id="color-palette-2nd">
-    <div class="color-cell" id="turquoise">
-    <p class="colorName">Turquoise</p>
-      <div class="color-button" id="turquoise-button"></div>
-    </div>
-    <div class="color-cell" id="blue">
-      <p class="colorName">Blue</p>
-      <div class="color-button" id="blue-button"></div>
-    </div>
-    <div class="color-cell" id="green">
-      <p class="colorName">Green</p>
-      <div class="color-button" id="green-button"></div>
-    </div>  
-    <div class="color-cell" id="purple">
-      <p class="colorName">Purple</p>
-      <div class="color-button" id="purple-button"></div>
-    </div>
-    <div class="color-cell" id="add">
-      <p class="colorName">Add</p>
-      <div class="color-button" id="add-button"></div>
-    </div>
-  </div><!-- color-pallete-end -->
-  <div class="row" id="bottom-margin">
-  </div><!-- color-pallete-end -->
+
+    <div class="row" id="top-bar">
+        <div class="button active" id="top-button-auto">Auto
+        </div>
+        <div class="button" id="top-button-manual">Manual
+        </div>
+    </div><!-- top-bar -->
+
+    <div class="row" id="graph-area">
+    </div><!-- graph-area -->
+
+    <div class="row" id="middle-bar">
+        <div class="button" id="middle-button-full">Full Brightness
+        </div>
+        <div class="button" id="middle-button-off">Turn Off
+        </div>
+    </div><!-- middle-bar -->
+
+    <div class="row" id="color-choices">
+        <p class="colorName">Color Choices:</p>
+    </div><!-- color-choices -->
+
+    <div class="row" id="color-palette-1st">
+        <div class="color-cell" id="white">
+            <p class="colorName">White</p>
+            <div class="color-button active" id="white-button"></div>
+        </div>
+        <div class="color-cell" id="yellow">
+            <p class="colorName">Yellow</p>
+            <div class="color-button" id="yellow-button"></div>
+        </div>
+        <div class="color-cell" id="orange">
+            <p class="colorName">Orange</p>
+            <div class="color-button" id="orange-button"></div>
+        </div>  
+        <div class="color-cell" id="pink">
+            <p class="colorName">Pink</p>
+            <div class="color-button" id="pink-button"></div>
+        </div>
+        <div class="color-cell" id="red">
+            <p class="colorName">Red</p>
+            <div class="color-button" id="red-button"></div>
+        </div>
+    </div><!-- color-pallete-1st -->
+
+    <div class="row" id="color-palette-2nd">
+        <div class="color-cell" id="turquoise">
+            <p class="colorName">Turquoise</p>
+            <div class="color-button" id="turquoise-button"></div>
+        </div>
+        <div class="color-cell" id="blue">
+            <p class="colorName">Blue</p>
+            <div class="color-button" id="blue-button"></div>
+        </div>
+        <div class="color-cell" id="green">
+            <p class="colorName">Green</p>
+            <div class="color-button" id="green-button"></div>
+        </div>  
+        <div class="color-cell" id="purple">
+            <p class="colorName">Purple</p>
+            <div class="color-button" id="purple-button"></div>
+        </div>
+        <div class="color-cell" id="add">
+            <p class="colorName">Add</p>
+            <div class="color-button" id="add-button"></div>
+        </div>
+    </div><!-- color-pallete-end -->
+
+    <div class="row" id="bottom-margin">
+    </div><!-- color-pallete-end -->
+
 </div><!-- container -->
 
 
@@ -68,122 +78,122 @@
 <script src = "js/auto_canvas.js"></script>
 <script src = "js/hex-to-rgb.min.js"></script>
 <script src='js/tinycolor.js'></script>
-{{!-- <script src= "js/manual_canvas.js"></script> --}}
+<!-- <script src= "js/manual_canvas.js"></script> -->
 
 <script>
 $(document).ready(function () {
-  //when user clicks a button on the top bar, toggle it
-  $("#top-button-auto").click(function(){
-    $(this).toggleClass("active");
-    $("#top-button-manual").toggleClass("active");
+    //when user clicks a button on the top bar, toggle it
+    $("#top-button-auto").click(function(){
+        $(this).toggleClass("active");
+        $("#top-button-manual").toggleClass("active");
 
-    window.location.href = '/auto';
-  });
-  $("#top-button-manual").click(function(){
-    $(this).toggleClass("active");
-    $("#top-button-auto").toggleClass("active");
+        window.location.href = '/auto';
+    });
+    $("#top-button-manual").click(function(){
+        $(this).toggleClass("active");
+        $("#top-button-auto").toggleClass("active");
 
-    window.location.href = '/manual';
-  });
+        window.location.href = '/manual';
+    });
 
+    //when user clicks a button on the middle bar, toggle it
+    $("#middle-button-full").click(function(){
+        $(this).toggleClass("active");
+        $("#middle-button-off").removeClass("active");
 
-  //when user clicks a button on the middle bar, toggle it
-  $("#middle-button-full").click(function(){
-    $(this).toggleClass("active");
-    $("#middle-button-off").removeClass("active");
+        //Post request to server
+        if($(this).hasClass("active")){
+            //turn on the light
+            $.ajax({
+                type: "post",
+                url: "/hueapi/turnOnOff",
+                data: { state : "on"},
+                success: function(data){
+                    console.log(data);
+                }
+            });
+        } else {
+            //turn it back to initial color
+            $.ajax({
+                type: "post",
+                url: "/hueapi/changeColor",
+                data: { selectedColorId : selectedColorId,
+                        brightness : currentBrightness},
+                success: function(data){
+                    console.log(data);
+                }
+            });
+        }
+    });
+    $("#middle-button-off").click(function(){
+        $(this).toggleClass("active");
+        $("#middle-button-full").removeClass("active");
 
-    //Post request to server
-    if($(this).hasClass("active")){
-      //$.post( "/hueapi/turnOnOff", { state : "on"} );
+        //Post request to server
+        if($(this).hasClass("active")){
+            //turn off the light
+            $.ajax({
+                type: "post",
+                url: "/hueapi/turnOnOff",
+                data: { state : "off"},
+                success: function(data){
+                    console.log(data);
+                }
+            });
+        } else {
+            //turn it back to initial color
+            $.ajax({
+                type: "post",
+                url: "/hueapi/changeColor",
+                data: { selectedColorId : selectedColorId,
+                        brightness : currentBrightness},
+                success: function(data){
+                    console.log(data);
+                }
+            });
+        }
+    });
 
-      $.ajax({
-        type: "post",
-        url: "/hueapi/turnOnOff",
-        data: { state : "on"},
-        success: function(data){alert(data);}
-      });
+    //when user clicks a button on color buttons, show the indicator
+    $(".color-button").click(function(){
+        $(".color-button").removeClass("active");
+        $("#middle-button-full").removeClass("active");
+        $("#middle-button-off").removeClass("active");
+        $(this).toggleClass("active");
 
-    } else {
-      //turn it back to initial color
-      // $.post( "/hueapi/changeColor", { selectedColorId : selectedColorId} );
-      $.ajax({
-        type: "post",
-        url: "/hueapi/changeColor",
-        data: { selectedColorId : selectedColorId},
-        success: function(data){alert(data);}
-      });
-    }
-  });
-  $("#middle-button-off").click(function(){
-    $(this).toggleClass("active");
-    $("#middle-button-full").removeClass("active");
+        if($(this).attr("id") == "add-button"){
+           //do nothing
+        } else {
+            //take the background color of the button
+            colorSelected = $(this).css("background-color");
+            colorSelected = $(this).css("backgroundColor").toString().match(/\d+/g);
+            colorSelected = "#"+colorSelected.map(function(t){return ("0"+(t|0).toString(16)).substr(-2)}).join("");
 
-    //Post request to server
-    if($(this).hasClass("active")){
-      //$.post( "/hueapi/turnOnOff", { state : "off"} );
+            colorSelected = hexToRgb(colorSelected);
 
-      $.ajax({
-        type: "post",
-        url: "/hueapi/turnOnOff",
-        data: { state : "off"},
-        success: function(data){alert(data);}
-      });
-    } else {
-      //turn it back to initial color
-      //$.post( "/hueapi/changeColor", { selectedColorId : selectedColorId} );
+            var string = "rgb " + colorSelected.r + " " + colorSelected.g + " " + colorSelected.b;
+            colorSelected = tinycolor(string).toHsv();
+            colorSelected.s = colorSelected.s * 100;
+            colorSelected.v = colorSelected.v * 100;
 
-      $.ajax({
-        type: "post",
-        url: "/hueapi/changeColor",
-        data: { selectedColorId : selectedColorId},
-        success: function(data){alert(data);}
-      });
-    }
-  });
+            //Post request to node server
+            selectedColorId = $(this).attr("id");
+            //change the light color
+            $.ajax({
+                type: "post",
+                url: "/hueapi/changeColor",
+                data: { selectedColorId : selectedColorId,
+                        brightness : currentBrightness},
+                success: function(data){
+                    console.log(data);
+                }
+            });
+        }
+    });
 
-
-  //when user clicks a button on color buttons, show the indicator
-  $(".color-button").click(function(){
-    $(".color-button").removeClass("active");
-    $(this).toggleClass("active");
-
-    if($(this).attr("id") == "add-button"){
-      //do nothing
-    } else {
-      //take the background color of the button
-      colorSelected = $(this).css("background-color");
-      colorSelected = $(this).css("backgroundColor").toString().match(/\d+/g);
-      colorSelected = "#"+colorSelected.map(function(t){return ("0"+(t|0).toString(16)).substr(-2)}).join("");
-
-      colorSelected = hexToRgb(colorSelected);
-
-      var string = "rgb " + colorSelected.r + " " + colorSelected.g + " " + colorSelected.b;
-      colorSelected = tinycolor(string).toHsv();
-      colorSelected.s = colorSelected.s * 100;
-      colorSelected.v = colorSelected.v * 100;
-
-    //Post request to node server
-    //   $.post( "/hueapi/changeColor", { selected_h : colorSelected.h, selected_s : colorSelected.s, selected_v : colorSelected.v} );
-    // }
-      selectedColorId = $(this).attr("id");
-      // $.post( "/hueapi/changeColor", { selectedColorId : selectedColorId} );
-
-          $.ajax({
-            type: "post",
-            url: "/hueapi/changeColor",
-            data: { selectedColorId : selectedColorId},
-            success: function(data){
-              alert(data);
-            }
-          });
-      }
-  });
-
-
-  //when user clicks the add button in the color palette, take him to the color setting page
-  $("#add-button").click(function(){
-    window.location.href = '/addColor';
-  });
-
+    //when user clicks the add button in the color palette, take him to the color setting page
+    $("#add-button").click(function(){
+          window.location.href = '/addColor';
+    });
 });
 </script>

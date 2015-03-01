@@ -15,7 +15,7 @@ body {
 
 #top-bar{ 
 	height: 8.33%;
-	background-color: green;
+	/*background-color: green;*/
 	background-image: url("../img/menu_bar.png");
 	background-size: 100% 100%;
 }

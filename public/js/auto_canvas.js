@@ -108,7 +108,7 @@ function setBackgroundImage(){
 	}
 	push();
 	translate(bgImageX, 0);
-	image(bgImage, 0, 0, actual_BgImageWidth, graphAreaHeight); //set bg image
+	image(bgImage, 0, 0, actual_BgImageWidth, actual_BgImageHeight); //set bg image
 	pop();
 }
 
@@ -197,7 +197,7 @@ function setArrowImages(){
 
 //=========== updateValues() ===========
 function updateValues(){
-	//reset the value of current brightness
+	//update the value of current brightness
 	currentBrightness = pt2_bri;
 }
 
@@ -267,29 +267,27 @@ function scrollTheGraph(){
 		console.log("bgImageX is relocated at: " + bgImageX);
 	} 
 }
-/*
+
 //=========== mouseReleased() ===========
 //when you relase your clicked mouse on the canvas
 function mouseReleased(){
+	var r = getXonBg(0.25); //acceptable range for dragging a point
 
-	//dragging on point2
-	var r = 0.1 * width;//acceptable range for dragging a point
-	if (abs(mouseX - width * pt2_time) < r && abs(mouseY - height * pt2_bri) < r){
-		console.log("on the point 2 ball");
-
-		//$.post( "/hueapi/changeBri", { brightness : currentBrightness} );
-
-		  $.ajax({
+	//dragging on point2 --------------------
+	//when your mouse cursor is in the range of the point 2
+	if (abs(mouseX - getXonCv(pt2_time)) < r && abs(mouseY - getYonCv(pt2_bri)) < r){
+		//Change the brightness
+		$.ajax({
             type: "post",
             url: "/hueapi/changeBri",
             data: { brightness : currentBrightness},
             success: function(data){
               alert(data);
             }
-          });
+        });
 	}
 }
-*/
+
 //=========== windowResized() ===========
 //when the browser window is resized
 function windowResized() {

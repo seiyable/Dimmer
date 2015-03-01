@@ -120,7 +120,13 @@ app.get('/addColor', function(req, res){
 //response to the POST request to change color
 app.post('/hueapi/changeColor', function(req, res){
   var state = lightState.create();
+ 
+  // Set light state to 'on' first
+  api.setLightState(5, state.on())
+    .then(displayResult)
+    .done();
 
+  //if the request has data named "selectedColorId"
   if (req.body.selectedColorId){
     var id = req.body.selectedColorId;
     if(id == "white-button"){
@@ -162,10 +168,17 @@ app.post('/hueapi/changeColor', function(req, res){
     }
   }
 
+  //set the brightness
+  if(req.body.brightness){
+     state.bri(req.body.brightness);
+  }
+
   //change the color
    api.setLightState(5, state)
      .then(displayResult)
      .done();
+
+  res.end();
 
 });
 
@@ -189,24 +202,28 @@ app.post('/hueapi/turnOnOff', function(req, res){
       }
   }
 
-
+  res.end();
 });
 
 //response to the POST request to turn on or off the light
 app.post('/hueapi/changeBri', function(req, res){
   var state = lightState.create();
 
+  // Set light state to 'on' first
+  api.setLightState(5, state.on())
+    .then(displayResult)
+    .done();
+
   if (req.body.brightness){
-      // Set light state to 'on' with warm white value of 500 and brightness set to 100%
+      // Set the brightness with the given value
       state.bri(req.body.brightness);
       api.setLightState(5, state)
         .then(displayResult)
         .done();
-    }
+  }
+
+  res.end();
 });
-
-
-
 
 //============================================
 //server setup
