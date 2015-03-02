@@ -22,6 +22,15 @@
     var colorSelected = {h:0, s:0, v:100};
     var selectedColorId = "white-button";
     var currentBrightness = 100;
+    
+    //set current time
+    //note: 0pm = 0, 6pm = 6, 0am = 12, 6am = 18
+    var date = new Date();
+    var hour = date.getHours(), minute = date.getMinutes();
+    var currentTime = (hour-12) + minute/60;
+    if(currentTime < 0){
+        currentTime = 24 - currentTime;
+    }
 
     //when the document is loaded
 	$(document).ready(function(){

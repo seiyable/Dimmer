@@ -36,9 +36,6 @@ var pt4_time = 24,       pt4_bri = pt3_bri; //initial values of point 4
 var pt5_time = pt2_time, pt5_bri = 0; //initial values of point 5
 var pt6_time = pt3_time, pt6_bri = 0; //initial values of point 6
 
-//current time
-var currentTime = 2; //holding current time
-
 // images
 var bgImage, arrowImageLR, arrowImageUD; //image data
 var bgImageX; //the X position of bg image
@@ -139,20 +136,23 @@ function fillTheGraph(){
 //=========== drawLines() ===========
 function drawLines(){
 	fill(40);
-	stroke(40);
 
 	push();
 	translate(bgImageX, 0);
 
 	//draw current time bar
-	line(getXonBg(currentTime), getYonBg(0), getXonBg(currentTime), getYonBg(100));
+	stroke(0, 60, 100);
+	line(getXonBg(currentTime), getYonBg(102), getXonBg(currentTime), getYonBg(0));
+
 	//draw vertical lines
+	stroke(40);
 	line(getXonBg(pt2_time), getYonBg(pt2_bri), getXonBg(pt5_time), getYonBg(pt5_bri));
 	line(getXonBg(pt3_time), getYonBg(pt3_bri), getXonBg(pt6_time), getYonBg(pt6_bri));
 	
 	pop();
 
 	//draw axis
+	stroke(40);
 	line(0.08*width, getYonCv(102), 0.08*width, getYonCv(0)); //Y-axis
 	line(0.08*width, getYonCv(0), width, getYonCv(0)); //X-axis
 }
@@ -282,7 +282,7 @@ function mouseReleased(){
             url: "/hueapi/changeBri",
             data: { brightness : currentBrightness},
             success: function(data){
-              alert(data);
+              console.log(data);
             }
         });
 	}

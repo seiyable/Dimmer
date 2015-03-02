@@ -20,7 +20,7 @@ var slider_yellow_lr_original_ImageWidth = 12;
 var slider_yellow_lr_actual_ImageWidth;
 
 //brightness
-var manual_bri = 20;
+//var currentBrightness = 20;
 
 //=========== setup() ===========
 function setup() {
@@ -79,7 +79,7 @@ function displayLabels(){
 	strokeWeight(0.1);
 	textSize(0.05*height);
 	
-	text("brightness: " + parseInt(manual_bri), slider_posX, slider_posY - 0.07*height);
+	text("brightness: " + parseInt(currentBrightness), slider_posX, slider_posY - 0.07*height);
 
 }
 
@@ -98,17 +98,17 @@ function displaySlider(){
 	//middle part of the yellow bar
 	noStroke();
 	fill(47, 62, 100);
-	rect(slider_posX + slider_yellow_lr_actual_ImageWidth, slider_posY, getBarWidth(manual_bri) + 1, slider_yellow_actual_ImageHeight);
+	rect(slider_posX + slider_yellow_lr_actual_ImageWidth, slider_posY, getBarWidth(currentBrightness) + 1, slider_yellow_actual_ImageHeight);
 	stroke(0);
 
 	//right edge of the yellow bar
-	image(slider_yellowImage_right, slider_posX + slider_yellow_lr_actual_ImageWidth + getBarWidth(manual_bri), slider_posY, slider_yellow_lr_actual_ImageWidth, slider_yellow_actual_ImageHeight);
+	image(slider_yellowImage_right, slider_posX + slider_yellow_lr_actual_ImageWidth + getBarWidth(currentBrightness), slider_posY, slider_yellow_lr_actual_ImageWidth, slider_yellow_actual_ImageHeight);
 }
 
 //=========== updateValues() ===========
 function updateValues(){
 	//update the value of current brightness
-	currentBrightness = manual_bri;
+	//currentBrightness = currentBrightness;
 	if(currentBrightness < 0){
 		currentBrightness = 0;
 	} else if (currentBrightness > 100){
@@ -121,7 +121,7 @@ function updateValues(){
 function mouseDragged(){
 
 	var slider_left_edge    = (width  - slider_base_actual_ImageWidth)  / 2;
-	var slider_right_edge   = slider_left_edge + (slider_yellow_lr_actual_ImageWidth * 2) + getBarWidth(manual_bri);
+	var slider_right_edge   = slider_left_edge + (slider_yellow_lr_actual_ImageWidth * 2) + getBarWidth(currentBrightness);
 	var slider_top_edge     = (height - slider_base_actual_ImageHeight) / 2;
 	var slider_bottom_edge  = slider_top_edge + slider_base_actual_ImageHeight;
 	var margin              = slider_base_actual_ImageWidth / 10;
@@ -131,8 +131,8 @@ function mouseDragged(){
 		//if the bar is in the right range
 		if(getBri(mouseX) >= 0 && getBri(mouseX) <= 101){
 			//update brightness value
-			manual_bri = getBri(mouseX);
-			console.log(manual_bri);
+			currentBrightness = getBri(mouseX);
+			console.log(currentBrightness);
 		}
 	}
 }
@@ -141,27 +141,18 @@ function mouseDragged(){
 //when you relase your clicked mouse on the canvas
 function mouseReleased(){
 
-	var slider_left_edge    = (width  - slider_base_actual_ImageWidth)  / 2;
-	var slider_right_edge   = slider_left_edge + (slider_yellow_lr_actual_ImageWidth * 2) + getBarWidth(manual_bri);
-	var slider_top_edge     = (height - slider_base_actual_ImageHeight) / 2;
-	var slider_bottom_edge  = slider_top_edge + slider_base_actual_ImageHeight;
-	var margin              = slider_base_actual_ImageWidth / 10;
+	//Change the brightness
+	$.ajax({
+		type: "post",
+	    url: "/hueapi/changeBri",
+	    data: { brightness : currentBrightness},
+	        success: function(data){
+	          console.log(data);
+	        }
+	});
 
-	//if your mouse is on the yellow bar
-	if(mouseX > slider_left_edge - margin && mouseX < slider_right_edge + margin && mouseY > slider_top_edge && mouseY < slider_bottom_edge){
-		//if the bar is in the right range
-		if(getBri(mouseX) >= 0 && getBri(mouseX) <= 101){
-			//Change the brightness
-			$.ajax({
-	            type: "post",
-	            url: "/hueapi/changeBri",
-	            data: { brightness : currentBrightness},
-	            success: function(data){
-	              alert(data);
-	            }
-	        });
-		}
-	}
+	$("#middle-button-full").removeClass("active");
+    $("#middle-button-off").removeClass("active");
 }
 
 //=========== windowResized() ===========
