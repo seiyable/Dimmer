@@ -29,12 +29,20 @@ The value for brightness(ex: pt_bri) is in the range of 0 ~ 100.
 var graphAreaWidth, graphAreaHeight; //actual size of graph area
 
 //points
-var pt2_time = 9,        pt2_bri = 100; //initial values of point 2
-var pt1_time = 0,        pt1_bri = pt2_bri; //initial values of point 1
-var pt3_time = 12,       pt3_bri = 10; //initial values of point 3
-var pt4_time = 24,       pt4_bri = pt3_bri; //initial values of point 4
-var pt5_time = pt2_time, pt5_bri = 0; //initial values of point 5
-var pt6_time = pt3_time, pt6_bri = 0; //initial values of point 6
+// //var pt2_time = 9,        pt2_bri = 100; //initial values of point 2
+// var pt1_time = 0,        pt1_bri = pt2_bri; //initial values of point 1
+// //var pt3_time = 12,       pt3_bri = 10; //initial values of point 3
+// var pt4_time = 24,       pt4_bri = pt3_bri; //initial values of point 4
+// var pt5_time = pt2_time, pt5_bri = 0; //initial values of point 5
+// var pt6_time = pt3_time, pt6_bri = 0; //initial values of point 6
+
+var pt2_time, pt2_bri;
+var pt1_time, pt1_bri;
+var pt3_time, pt3_bri;
+var pt4_time, pt4_bri;
+var pt5_time, pt5_bri;
+var pt6_time, pt6_bri;
+
 
 // images
 var bgImage, arrowImageLR, arrowImageUD; //image data
@@ -60,6 +68,14 @@ function setup() {
   	$("#graph-area").append($("#graph"));
   	$("#graph").removeAttr("style");
 
+  	//set values for points
+  	//pt2_time = 9,        pt2_bri = 100; //initial values of point 2
+	pt1_time = 0,        pt1_bri = pt2_bri; //initial values of point 1
+	//pt3_time = 12,       pt3_bri = 10; //initial values of point 3
+	pt4_time = 24,       pt4_bri = pt3_bri; //initial values of point 4
+	pt5_time = pt2_time, pt5_bri = 0; //initial values of point 5
+	pt6_time = pt3_time, pt6_bri = 0; //initial values of point 6
+
   	//load images
 	bgImage      = loadImage("../img/graph.png");
 	arrowImageLR = loadImage("../img/arrow_left_right.png");
@@ -79,7 +95,7 @@ function setup() {
     bri100pcntDist       = original_Bri100pcntDist * compressedRate;
 
     //set initial x position of bg image
-    bgImageX = -getXonBg(8);
+    bgImageX = -getXonBg(currentTime - 1);
 
 }
 
@@ -116,7 +132,7 @@ function fillTheGraph(){
 	translate(bgImageX, 0);
 
 	noStroke();
-	fill(colorSelected.h, colorSelected.s, colorSelected.v, 60); //"colorSelected" instance is passed from html
+	fill(selectedColorValue.h, selectedColorValue.s, selectedColorValue.v, 60); //"selectedColorValue" instance is passed from html
 	rect(getXonBg(pt1_time), getYonBg(pt1_bri), getXonBg(pt2_time) - getXonBg(pt1_time), getYonBg(0) - getYonBg(pt1_bri)); //rectangle at the left side
 	rect(getXonBg(pt3_time), getYonBg(pt3_bri), getXonBg(pt4_time) - getXonBg(pt3_time), getYonBg(0) - getYonBg(pt3_bri)); //triangle at the top
 
@@ -209,42 +225,42 @@ function mouseDragged(){
 
 	//dragging on point2 --------------------
 	//when your mouse cursor is in the range of the point 2
-	if (abs(mouseX - getXonCv(pt2_time)) < r && abs(mouseY - getYonCv(pt2_bri)) < r){
+	if (dist(mouseX, mouseY, getXonCv(pt2_time), getYonCv(pt2_bri)) < r){
 		//change the position of the point only when its within the graph
 		if(mouseY < getYonCv(0) && mouseY > getYonCv(100)){
 			pt2_bri = getBri(mouseY);
         	pt1_bri = pt2_bri;
-        	console.log("pt2_bri is reset to: " + pt2_bri);
+        	console.log("pt2_bri is moved to: " + pt2_bri);
     	}
 	}
 	//dragging on point3 --------------------
 	//when your mouse cursor is in the range of the point 3
-	else if (abs(mouseX - getXonCv(pt3_time)) < r && abs(mouseY - getYonCv(pt3_bri)) < r){
+	else if (dist(mouseX, mouseY, getXonCv(pt3_time), getYonCv(pt3_bri)) < r){
 		//change the position of the point only when its within the graph
 		if(mouseY < getYonCv(0) && mouseY >getYonCv(100)){	
 			pt3_bri = getBri(mouseY);
         	pt4_bri = pt3_bri;
-        	console.log("pt3_bri is reset to: " + pt3_bri);
+        	console.log("pt3_bri is moved to: " + pt3_bri);
     	}
 	}
 	//dragging on point5 --------------------
 	//when your mouse cursor is in the range of the point 5
-	else if (abs(mouseX - getXonCv(pt5_time)) < r && abs(mouseY - getYonCv(pt5_bri)) < r){
+	else if (dist(mouseX, mouseY, getXonCv(pt5_time), getYonCv(pt5_bri)) < r){
 		//change the position of the point only when its within the graph
 		if(getTime(mouseX) > 0 && mouseX < getXonCv(pt6_time) - r){	
 			pt5_time = getTime(mouseX);
 	        pt2_time = pt5_time;
-	        console.log("pt5_time is reset to: " + pt5_time);
+	        console.log("pt5_time is moved to: " + pt5_time);
 	    }
 	}
 	//dragging on point6 --------------------
 	//when your mouse cursor is in the range of the point 6
-	else if (abs(mouseX - getXonCv(pt6_time)) < r && abs(mouseY - getYonCv(pt6_bri)) < r){
+	else if (dist(mouseX, mouseY, getXonCv(pt6_time), getYonCv(pt6_bri)) < r){
 		//change the position of the point only when its within the graph
 		if(mouseX > getXonCv(pt5_time) + r && getTime(mouseX) < 24){	
 			pt6_time = getTime(mouseX);
 	        pt3_time = pt6_time;
-	        console.log("pt6_time is reset to: " + pt6_time);
+	        console.log("pt6_time is moved to: " + pt6_time);
 	    }
 	}
 	//dragging on background --------------------
@@ -273,18 +289,15 @@ function scrollTheGraph(){
 function mouseReleased(){
 	var r = getXonBg(0.25); //acceptable range for dragging a point
 
-	//dragging on point2 --------------------
-	//when your mouse cursor is in the range of the point 2
-	if (abs(mouseX - getXonCv(pt2_time)) < r && abs(mouseY - getYonCv(pt2_bri)) < r){
-		//Change the brightness
-		$.ajax({
-            type: "post",
-            url: "/hueapi/changeBri",
-            data: { brightness : currentBrightness},
-            success: function(data){
-              console.log(data);
-            }
-        });
+	//dragging on points --------------------
+	//when your mouse cursor is in the range of the point 2, 3, 5, or 6
+	if ((dist(mouseX, mouseY, getXonCv(pt2_time), getYonCv(pt2_bri)) < r) ||
+		(dist(mouseX, mouseY, getXonCv(pt3_time), getYonCv(pt3_bri)) < r) ||
+		(dist(mouseX, mouseY, getXonCv(pt5_time), getYonCv(pt5_bri)) < r) ||
+		(dist(mouseX, mouseY, getXonCv(pt6_time), getYonCv(pt6_bri)) < r)){
+
+		//update the light status
+        updateLightStatus();
 	}
 }
 

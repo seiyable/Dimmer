@@ -9,20 +9,42 @@
     <title>Auto Dimmer</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="css/main.css" rel="stylesheet">
+    <link href="../css/main.css" rel="stylesheet">
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="../js/jquery-2.1.3.min.js"></script>
 
-    <!-- Javascript functions -->
+    <!-- load p5.js library -->
+    <script src = "../js/p5.min.js"></script>
+    <script src = "../js/hex-to-rgb.min.js"></script>
+    <script src='../js/tinycolor.js'></script>
+</head>
+<body>
+
+    {{{body}}}
+
+
+
+
     <script>
-    var colorSelected = {h:0, s:0, v:100};
-    var selectedColorId = "white-button";
-    var currentBrightness = 100;
-    
+    //==============================================================================
+    //initialize global variables given by server
+    //==============================================================================
+
+    //set points
+    var pt2_time = {{pt2_time}}, pt2_bri = {{pt2_bri}};
+    var pt3_time = {{pt3_time}}, pt3_bri = {{pt3_bri}};
+
+    //set color id and value
+    var selectedColorId = "{{color_id}}";
+    var selectedColorValue = getColorValue(selectedColorId);
+
+    //set current brightness
+    var currentBrightness = {{currentBri}};
+
     //set current time
     //note: 0pm = 0, 6pm = 6, 0am = 12, 6am = 18
     var date = new Date();
@@ -32,32 +54,95 @@
         currentTime = 24 - currentTime;
     }
 
-    //when the document is loaded
-	$(document).ready(function(){
-		resizeContainerWidth();
-	});
+    //----------------------------------------------------------
+    //get background color value of the button with a given id
+    function getColorValue(_selectedColorId){
+        var value; //the color value to be returned
+        var id_string = '#' + _selectedColorId; //the string for jQuery
 
-	//when the window is resized
-	$(window).resize(function(){
-		resizeContainerWidth();
-	});
+        //take the background color of the button with the given id
+        value = $(id_string).css("background-color").toString().match(/\d+/g); //get jQuery color object and turn it to a string
+        value = "#"+value.map(function(t){return ("0"+(t|0).toString(16)).substr(-2)}).join(""); //get hex string
+        value = hexToRgb(value); //turn it to a javascript object that has three parameters: r, g, b
+        var rgb_string = "rgb " + value.r + " " + value.g + " " + value.b; //turn it to rgb string
+        value = tinycolor(rgb_string).toHsv(); //turn it to a javascript object that has three parameters: h, s, v
+        value.s = value.s * 100; //adjust the value
+        value.v = value.v * 100; //adjust the value
 
-	function resizeContainerWidth(){
-		//get the window height
-		var windowHeight = $(window).height();
+        console.log("value.h: " + value.h);
+        console.log("value.s: " + value.s);
+        console.log("value.v: " + value.v);
 
-		//calc the page width based on iPhone 6's screen resolution
-		var containerWidth = 0.5625 * windowHeight;
+        return value;
+    }
 
-		//atatch it to css
-		$(".container").css("width",containerWidth+"px");
-	}
+    //----------------------------------------------------------
+    //ajax call to update light status through node server
+    function updateLightStatus(){
+        $.ajax({
+            type: "post",
+            url: "/{{user_id}}/update_values",
+            data:
+                { 
+                    pt2_time : pt2_time,
+                    pt2_bri  : pt2_bri,
+                    pt3_time : pt3_time,
+                    pt3_bri  : pt3_bri,
+                    color_id : selectedColorId,
+                },
+            success: function(data){
+                console.log(data);
+            }
+        });
+    }
+
+    //----------------------------------------------------------
+    //ajax call to temporarily change light status through node server
+    function changeLightStatusTemp(_mode, _state, _color_id){
+        var color_id = _color_id || "white-button";
+
+        $.ajax({
+            type: "post",
+            url: "/{{user_id}}/temporal",
+            data:
+                { 
+                    mode     : _mode,
+                    state    : _state,
+                    color_id : color_id
+                },
+            success: function(data){
+                console.log(data);
+            }
+        });
+    }
 
     </script>
-</head>
-<body>
 
-    {{{body}}}
+
+    <!-- Javascript functions -->
+    <script>
+    //when the document is loaded
+    $(document).ready(function(){
+        resizeContainerWidth();
+    });
+
+    //when the window is resized
+    $(window).resize(function(){
+        resizeContainerWidth();
+    });
+
+    function resizeContainerWidth(){
+        //get the window height
+        var windowHeight = $(window).height();
+
+        //calc the page width based on iPhone 6's screen resolution
+        var containerWidth = 0.5625 * windowHeight;
+
+        //atatch it to css
+        $(".container").css("width",containerWidth+"px");
+    }
+
+    </script>
 
 </body>
 </html>

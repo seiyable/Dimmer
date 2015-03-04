@@ -19,9 +19,6 @@ var slider_yellowImage_left, slider_yellowImage_right;
 var slider_yellow_lr_original_ImageWidth = 12;
 var slider_yellow_lr_actual_ImageWidth;
 
-//brightness
-//var currentBrightness = 20;
-
 //=========== setup() ===========
 function setup() {
 	//create a canvas
@@ -108,7 +105,6 @@ function displaySlider(){
 //=========== updateValues() ===========
 function updateValues(){
 	//update the value of current brightness
-	//currentBrightness = currentBrightness;
 	if(currentBrightness < 0){
 		currentBrightness = 0;
 	} else if (currentBrightness > 100){
@@ -141,15 +137,8 @@ function mouseDragged(){
 //when you relase your clicked mouse on the canvas
 function mouseReleased(){
 
-	//Change the brightness
-	$.ajax({
-		type: "post",
-	    url: "/hueapi/changeBri",
-	    data: { brightness : currentBrightness},
-	        success: function(data){
-	          console.log(data);
-	        }
-	});
+	//change the brightness of the light
+	changeLightStatusTemp("manual", currentBrightness, selectedColorId);
 
 	$("#middle-button-full").removeClass("active");
     $("#middle-button-off").removeClass("active");

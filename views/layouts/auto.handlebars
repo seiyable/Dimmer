@@ -72,14 +72,6 @@
 
 </div><!-- container -->
 
-
-<!-- load p5.js library -->
-<script src = "js/p5.min.js"></script>
-<script src = "js/auto_canvas.js"></script>
-<script src = "js/hex-to-rgb.min.js"></script>
-<script src='js/tinycolor.js'></script>
-<!-- <script src= "js/manual_canvas.js"></script> -->
-
 <script>
 $(document).ready(function () {
     //when user clicks a button on the top bar, toggle it
@@ -87,13 +79,13 @@ $(document).ready(function () {
         $(this).toggleClass("active");
         $("#top-button-manual").toggleClass("active");
 
-        window.location.href = '/auto';
+        location.href = '/{{user_id}}/auto';
     });
     $("#top-button-manual").click(function(){
         $(this).toggleClass("active");
         $("#top-button-auto").toggleClass("active");
 
-        window.location.href = '/manual';
+        location.href = '/{{user_id}}/manual';
     });
 
     //when user clicks a button on the middle bar, toggle it
@@ -103,26 +95,13 @@ $(document).ready(function () {
 
         //Post request to server
         if($(this).hasClass("active")){
-            //turn on the light
-            $.ajax({
-                type: "post",
-                url: "/hueapi/turnOnOff",
-                data: { state : "on"},
-                success: function(data){
-                    console.log(data);
-                }
-            });
+            //turn the light to 100% bright white
+            changeLightStatusTemp("auto", "full");
+
         } else {
-            //turn it back to initial color
-            $.ajax({
-                type: "post",
-                url: "/hueapi/changeColor",
-                data: { selectedColorId : selectedColorId,
-                        brightness : currentBrightness},
-                success: function(data){
-                    console.log(data);
-                }
-            });
+            //turn it back to the original color and brightness
+            changeLightStatusTemp("auto", "cancel");
+
         }
     });
     $("#middle-button-off").click(function(){
@@ -131,26 +110,13 @@ $(document).ready(function () {
 
         //Post request to server
         if($(this).hasClass("active")){
-            //turn off the light
-            $.ajax({
-                type: "post",
-                url: "/hueapi/turnOnOff",
-                data: { state : "off"},
-                success: function(data){
-                    console.log(data);
-                }
-            });
+            //turn the light off
+            changeLightStatusTemp("auto", "off");
+
         } else {
-            //turn it back to initial color
-            $.ajax({
-                type: "post",
-                url: "/hueapi/changeColor",
-                data: { selectedColorId : selectedColorId,
-                        brightness : currentBrightness},
-                success: function(data){
-                    console.log(data);
-                }
-            });
+            //turn it back to the original color and brightness
+            changeLightStatusTemp("auto", "cancel");
+
         }
     });
 
@@ -165,35 +131,20 @@ $(document).ready(function () {
            //do nothing
         } else {
             //take the background color of the button
-            colorSelected = $(this).css("background-color");
-            colorSelected = $(this).css("backgroundColor").toString().match(/\d+/g);
-            colorSelected = "#"+colorSelected.map(function(t){return ("0"+(t|0).toString(16)).substr(-2)}).join("");
-
-            colorSelected = hexToRgb(colorSelected);
-
-            var string = "rgb " + colorSelected.r + " " + colorSelected.g + " " + colorSelected.b;
-            colorSelected = tinycolor(string).toHsv();
-            colorSelected.s = colorSelected.s * 100;
-            colorSelected.v = colorSelected.v * 100;
-
-            //Post request to node server
             selectedColorId = $(this).attr("id");
-            //change the light color
-            $.ajax({
-                type: "post",
-                url: "/hueapi/changeColor",
-                data: { selectedColorId : selectedColorId,
-                        brightness : currentBrightness},
-                success: function(data){
-                    console.log(data);
-                }
-            });
+            selectedColorValue = getColorValue(selectedColorId);
+
+            //update the light status
+            updateLightStatus();
         }
     });
 
     //when user clicks the add button in the color palette, take him to the color setting page
     $("#add-button").click(function(){
-          window.location.href = '/addColor';
+          location.href = '/{{user_id}}/addColor';
     });
 });
 </script>
+
+<script src = "../js/auto_canvas.js"></script>
+
