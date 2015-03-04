@@ -213,8 +213,7 @@ function setArrowImages(){
 
 //=========== updateValues() ===========
 function updateValues(){
-	//update the value of current brightness
-	currentBrightness = pt2_bri;
+
 }
 
 
@@ -298,6 +297,13 @@ function mouseReleased(){
 
 		//update the light status
         updateLightStatus();
+
+        //update the current time
+        currentTime = getCurrentTime();
+
+        //remove active class from buttons on the middle bar
+        $("#middle-button-full").removeClass("active");
+    	$("#middle-button-off").removeClass("active");
 	}
 }
 
@@ -320,8 +326,30 @@ function windowResized() {
 	bri100pcntDist       = original_Bri100pcntDist * compressedRate;
 }
 
+//=========== keyPressed() ===========    //for debugging use
+//when a key is pressed
+function keyPressed() {
+	if(keyCode == UP_ARROW){
+		currentTime += 0.1;
+		//calc current brightness
+		currentBrightness = getCurrentBri(currentTime, pt2_time, pt2_bri, pt3_time, pt3_bri);
+		//change the light status
+    	changeLightStatusTemp("manual", currentBrightness, selectedColorId);
 
+    	$("#middle-button-full").removeClass("active");
+    	$("#middle-button-off").removeClass("active");
 
+	} else if (keyCode == DOWN_ARROW){
+		currentTime -= 0.1;
+		//calc current brightness
+		currentBrightness = getCurrentBri(currentTime, pt2_time, pt2_bri, pt3_time, pt3_bri);
+		//change the light status
+    	changeLightStatusTemp("manual", currentBrightness, selectedColorId);
+
+    	$("#middle-button-full").removeClass("active");
+    	$("#middle-button-off").removeClass("active");
+	}
+}
 
 
 /*=======================  basic functions  =======================*/
@@ -360,4 +388,3 @@ function getTime(_xOnCv){
 function getBri(_yOnCv){
 	return (graphBottomGap - _yOnCv) / bri100pcntDist * 100
 }
-

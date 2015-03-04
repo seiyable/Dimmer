@@ -97,7 +97,7 @@ body {
 	background-size: cover;
 }
 
-#middle-button-full{
+#middle-button-full, #manual-middle-button-full{
 	font-size: 12px;
 	color: #5f6473;
 
@@ -111,14 +111,14 @@ body {
 	background-size: cover;
 }
 
-#middle-button-full.active{
+#middle-button-full.active, #manual-middle-button-full.active{
 	background-image:url("../img/brightness_selected.png");
 	background-size: cover;
 
 	color:white;
 }
 
-#middle-button-off{
+#middle-button-off, #manual-middle-button-off{
 	font-size: 12px;
 	color: #5f6473;
 
@@ -132,7 +132,7 @@ body {
 	background-size: cover;
 }
 
-#middle-button-off.active{
+#middle-button-off.active, #manual-middle-button-off.active{
 	background-image:url("../img/brightness_selected.png");
 	background-size: cover;
 

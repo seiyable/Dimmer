@@ -46,13 +46,7 @@
     var currentBrightness = {{currentBri}};
 
     //set current time
-    //note: 0pm = 0, 6pm = 6, 0am = 12, 6am = 18
-    var date = new Date();
-    var hour = date.getHours(), minute = date.getMinutes();
-    var currentTime = (hour-12) + minute/60;
-    if(currentTime < 0){
-        currentTime = 24 - currentTime;
-    }
+    var currentTime = getCurrentTime();
 
     //----------------------------------------------------------
     //get background color value of the button with a given id
@@ -114,6 +108,40 @@
                 console.log(data);
             }
         });
+    }
+
+    //----------------------------------------   //for debugging use
+    //calc current brightness 
+    function getCurrentBri(_currentTime, _pt2_time, _pt2_bri, _pt3_time, _pt3_bri){
+      if(_currentTime <= _pt2_time){
+        // if current time is before pt2 time
+        return _pt2_bri;
+
+      } else if(_currentTime > _pt2_time && _currentTime < _pt3_time) {
+        //if current time is between pt2 time and pt3 time
+        var slope = (_pt3_bri - _pt2_bri) / (_pt3_time - _pt2_time);
+        var intercept = _pt2_bri - slope * _pt2_time;
+        return slope * _currentTime + intercept;
+
+      } else if(_currentTime >= _pt3_time) {
+        //if current tiem is after pt3 time
+        return _pt3_bri
+
+      }
+    }
+
+    //----------------------------------------
+    //get current time
+    function getCurrentTime(){
+        //note: 0pm = 0, 6pm = 6, 0am = 12, 6am = 18
+        var date = new Date();
+        var hour = date.getHours(), minute = date.getMinutes();
+        var curTime = (hour-12) + minute/60;
+        if(curTime < 0){
+            curTime = 24 + curTime;
+        }
+
+        return curTime;
     }
 
     </script>

@@ -24,7 +24,7 @@
     <div class="row" id="color-palette-1st">
         <div class="color-cell" id="white">
             <p class="colorName">White</p>
-            <div class="color-button active" id="white-button"></div>
+            <div class="color-button" id="white-button"></div>
         </div>
         <div class="color-cell" id="yellow">
             <p class="colorName">Yellow</p>
@@ -74,6 +74,9 @@
 
 <script>
 $(document).ready(function () {
+    //add class "active" to the div with selected color
+    $('#' + selectedColorId).addClass("active");
+
     //when user clicks a button on the top bar, toggle it
     $("#top-button-auto").click(function(){
         $(this).toggleClass("active");
@@ -136,6 +139,9 @@ $(document).ready(function () {
 
             //update the light status
             updateLightStatus();
+
+            //update the current time
+            currentTime = getCurrentTime()
         }
     });
 

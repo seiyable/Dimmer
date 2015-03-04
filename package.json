@@ -2,7 +2,7 @@
   "name": "HueApp",
   "version": "0.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "test_callback.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

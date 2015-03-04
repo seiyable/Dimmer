@@ -49,28 +49,6 @@ var displayStatus = function(status) {
     console.log("Response from hue bridge: " + JSON.stringify(status, null, 2));
 };
 
-//var hostname = "128.122.151.166"; //itp
-//var username = "matanseiya"; //itp
-//var lightId = 5; //itp
-//var hostname = "192.168.2.5"; //seiya's local hue bridge
-//var username = "seiyakobayashi"; //seiya's local hue bridge
-//var lightId = 4; //seiya's local hue bridge
-
-//var api = new HueApi(hostname, username);
-
-// --------------------------
-//var state = lightState.create();
-
-//display bridge config
-//api.config().then(displayResult).done();
-
-//list all the lights connected to the bridge
-// api.lights()
-//     .then(displayResult)
-//     .done();
-
-// --------------------------
-
 //================================================
 //mongo settings
 //================================================
@@ -84,8 +62,8 @@ var db; //for mongo database
 //================================================
 
 //----------------------------------------
-//switch the polling status of the given user id
-function switchPolling(_user_id, _bool){
+//switch the dimming status of the given user id
+function switchDimmingStatus(_user_id, _bool){
 
   var user_table = db.collection("user_table");
   user_table
@@ -93,7 +71,7 @@ function switchPolling(_user_id, _bool){
       {user_id : _user_id}, //if there is a document that has this user_id,
       {$set: 
         {
-          polling_status : _bool //change the value of polling_status
+          dimming_status : _bool //change the value of dimming_status
         } 
       }, 
       function(err, result){
@@ -101,14 +79,125 @@ function switchPolling(_user_id, _bool){
           //if there is an error
           console.log('There was an error' + err);
         } else {
-          console.log("Polling_status has been turned " + _bool );
+          console.log("dimming_status has been turned " + _bool );
         }
       });
 }
 
+//----------------------------------------
+//dimming function
+var dimmerId;
+var dimmerUser = "matanseiya"; //for debugging use
+function startDimmer(){
+  var interval = 1000*60*1; //1 minutes
+  dimmerId = setInterval(dimmer, interval); //do this function every interval
+}
+
+function stopDimmer(){
+  clearInterval(dimmerId);
+}
+
+function dimmer(){
+  
+  var user_table = db.collection("user_table");
+  user_table
+    .find({dimming_status : true}) //find all the documents whose dimming status is true
+    .toArray(function(err, items){
+      if(err){
+        //if there is an error
+        console.log('There was an error' + err);
+
+      } else {
+        //if there is no error
+        //console.log(JSON.stringify(items));
+
+        var users = [];//user array
+
+        //iterate through all the items
+        for(var i = 0; i < items.length; i++){
+
+          if(users.indexOf(items[i].user_id) < 0){
+            //if there is no existing documents whose user_id is the same id as this,
+            //add it to the array
+            users.push(items[i].user_id); 
+
+          } else {
+            //if there is an existing documents whose user_id is the same id as this,
+            var ex = users.indexOf(items[i].user_id);
+            if (items[i].timestamp >= users[ex].timestamp){
+              //if the timestamp is greater than the existing one,
+              //remove the existing one from the array
+              users.splice(ex, 1);
+
+              //and add it to the array
+              users.push(items[i].user_id); 
+
+            } else {
+              //if the timestamp is smaller than the existing one,
+              //do nothing
+
+            }
+          }
+        }
+
+        console.log("Users whose dimming status is on are: " + users);
+
+        /*
+
+        //change the light brightness of all the users --------------------------
+        for (var i = 0; i < users.length; i++){
+
+          //retrieve items from schedule_table in db
+          var schedule_table = db.collection("schedule_table");
+          schedule_table
+            .find({user_id : users[i]}) //find all the documents that has this user_id
+            .sort({timestamp : -1}) //sort it based on its timestamp in discending order
+            .limit(1) //get only the first document
+            .toArray(function(err, items){
+              if(err){
+                //if there is an error
+                console.log('There was an error' + err);
+
+              } else {
+                //if there is no error
+                console.log("Dimming " + users[i] + "'s light.")
+
+                //update the light state
+                var currentTime = convertCurrentTime(Date.now()); //get current time
+                var currentBri = getCurrentBri(currentTime, items[0].pt2_time, items[0].pt2_bri, items[0].pt3_time, items[0].pt3_bri); //get current brightness
+                changeLightColBri(users[i], items[0].color_id, currentBri); //change light color and brightness
+              }
+            });
+        }
+
+        */
 
 
+          //retrieve items from schedule_table in db
+          var schedule_table = db.collection("schedule_table");
+          schedule_table
+            .find({user_id : dimmerUser}) //find all the documents that has this user_id
+            .sort({timestamp : -1}) //sort it based on its timestamp in discending order
+            .limit(1) //get only the first document
+            .toArray(function(err, items){
+              if(err){
+                //if there is an error
+                console.log('There was an error' + err);
 
+              } else {
+                //if there is no error
+                console.log("Dimming " + dimmerUser + "'s light.")
+
+                //update the light state
+                var currentTime = convertCurrentTime(Date.now()); //get current time
+                var currentBri = getCurrentBri(currentTime, items[0].pt2_time, items[0].pt2_bri, items[0].pt3_time, items[0].pt3_bri); //get current brightness
+                changeLightColBri(dimmerUser, items[0].color_id, currentBri); //change light color and brightness
+              }
+            });
+
+      }
+    });
+}
 
 
 //----------------------------------------
@@ -119,7 +208,7 @@ function convertCurrentTime(_timestamp){
   var hour = date.getHours(), minute = date.getMinutes();
   var currentTime = (hour-12) + minute/60;
   if(currentTime < 0){
-    currentTime = 24 - currentTime;
+    currentTime = 24 + currentTime;
   }
 
   return currentTime;
@@ -144,32 +233,6 @@ function getCurrentBri(_currentTime, _pt2_time, _pt2_bri, _pt3_time, _pt3_bri){
 
   }
 }
-
-
-/*
-//----------------------------------------
-//get schedule document
-function getSchedule(_user_id, callback){
-  var schedule_table = db.collection("schedule_table");
-  schedule_table
-    .find({user_id : _user_id}) //find all the documents that has this user_id
-    .sort({timestamp : -1}) //sort it based on its timestamp in discending order
-    .limit(1) //get only the first document
-    .toArray(function(err, items){
-      if(err){
-        //if there is an error
-        console.log('There was an error' + err);
-
-      } else {
-        //if there is no error
-        console.log("Data successfully retrieved for " + _user_id + " as below: " + JSON.stringify(items));
-
-        return the document with callback
-      }
-  });
-}
-*/
-
 
 //----------------------------------------
 //change light color and brightness
@@ -197,57 +260,64 @@ function changeLightColBri(_user_id, _color_id, _bri){
         //state to be passed to hue api
         var state = lightState.create(); 
 
-        // turn the light on first
-        api.setLightState(items[0].light_id, state.on())
-          .then(displayResult)
-          .done();
-
-        // set light color with the given color id
-        if(_color_id == "white-button"){                 // white
-          state.hsl(24000/182, 0/2.55, _bri);
-          console.log("turn white");
-
-        } else if(_color_id == "yellow-button"){         // yellow
-          state.hsl(17000/182, 180/2.55, _bri);
-          console.log("turn yellow");
-
-        } else if(_color_id == "orange-button"){         // orange
-          state.hsl(8000/182, 255/2.55, _bri);
-          console.log("turn orange");
-
-        } else if(_color_id == "pink-button"){           // pink
-          state.hsl(28/182, 129/2.55, _bri);
-          console.log("turn pink");
-
-        } else if(_color_id == "red-button"){            // red
-          state.hsl(1000/182, 190/2.55, _bri);
-          console.log("turn red");
-
-        } else if(_color_id == "turquoise-button"){      // turquoise
-          state.hsl(42000/182, 255/2.55, _bri);
-          console.log("turn turquoise");
-
-        } else if(_color_id == "blue-button"){           // blue
-          state.hsl(45000/182, 255/2.55, _bri);
-          console.log("turn blue");
-
-        } else if(_color_id == "green-button"){          // green
-          state.hsl(28000/182, 200/2.55, _bri);
-          console.log("turn green");
-
-        } else if(_color_id == "purple-button"){         // purple
-          state.hsl(49000/182, 255/2.55, _bri);
-          console.log("turn purple");
-
+        if(_bri < 2){
+          //if the brightness is less than 2, turn off the light
+          api.setLightState(items[0].light_id, state.off())
+            .then(displayResult)
+            .done();
         } else {
-          console.log("the color_id was invalid.")
-        }
+          // if not, turn the light on first
+          api.setLightState(items[0].light_id, state.on())
+            .then(displayResult)
+            .done();
 
-        //change the color
-         api.setLightState(items[0].light_id, state)
-           .then(displayResult)
-           .done();
+          // set light color with the given color id
+          if(_color_id == "white-button"){                 // white
+            state.hsl(24000/182, 0/2.55, _bri);
+            console.log("turn white");
 
+          } else if(_color_id == "yellow-button"){         // yellow
+            state.hsl(17000/182, 180/2.55, _bri);
+            console.log("turn yellow");
+
+          } else if(_color_id == "orange-button"){         // orange
+            state.hsl(8000/182, 255/2.55, _bri);
+            console.log("turn orange");
+
+          } else if(_color_id == "pink-button"){           // pink
+            state.hsl(28/182, 129/2.55, _bri);
+            console.log("turn pink");
+
+          } else if(_color_id == "red-button"){            // red
+            state.hsl(1000/182, 190/2.55, _bri);
+            console.log("turn red");
+
+          } else if(_color_id == "turquoise-button"){      // turquoise
+            state.hsl(42000/182, 255/2.55, _bri);
+            console.log("turn turquoise");
+
+          } else if(_color_id == "blue-button"){           // blue
+            state.hsl(45000/182, 255/2.55, _bri);
+            console.log("turn blue");
+
+          } else if(_color_id == "green-button"){          // green
+            state.hsl(28000/182, 200/2.55, _bri);
+            console.log("turn green");
+
+          } else if(_color_id == "purple-button"){         // purple
+            state.hsl(49000/182, 255/2.55, _bri);
+            console.log("turn purple");
+
+          } else {
+            console.log("the color_id was invalid.")
+          }
+
+          //change the color
+           api.setLightState(items[0].light_id, state)
+             .then(displayResult)
+             .done();
+
+          }
         }
     });
 
@@ -290,7 +360,7 @@ function turnLightFullOrOff(_user_id, _state){
             } else if(_state == "off"){
               console.log("turned off");
 
-              // Set light state to 'on' with warm white value of 500 and brightness set to 100%
+              // Set light state to off
               state.off();
               api.setLightState(items[0].light_id, state)
                 .then(displayResult)
@@ -315,8 +385,8 @@ app.get('/:user_id/auto', function(req, res){
   var data = {}; //data to be passed to the client
   data.user_id = req.params.user_id; //parse user id from the query string and add it to data
 
-  //turn on the polling status of the user
-  switchPolling(req.params.user_id, true);
+  //turn on the dimming status of the user
+  switchDimmingStatus(req.params.user_id, true);
 
   //retrieve items from schedule_table in db
   var schedule_table = db.collection("schedule_table");
@@ -329,18 +399,35 @@ app.get('/:user_id/auto', function(req, res){
         //if there is an error
         console.log('There was an error' + err);
 
-        //set tentative data
-        data.pt2_time   = 9;
-        data.pt2_bri    = 80;
-        data.pt3_time   = 12;
-        data.pt3_bri    = 15;
-        data.color_id   = "white-button";
-        data.currentBri = 100;
-
       } else {
         //if there is no error
-        console.log("Schedule data successfully retrieved for " + req.params.user_id + " as below: ");
-        console.log(JSON.stringify(items));
+        console.log(items);
+        if(items.length < 1){
+          //set tentative data
+          items.push({
+            user_id    : req.params.user_id,
+            timestamp  : Date.now(),
+            pt2_time   : 9,
+            pt2_bri    : 80,
+            pt3_time   : 12,
+            pt3_bri    : 15,
+            color_id   : "white-button"
+          });
+
+          //insert the data to db
+          schedule_table.insert(items[0],
+            function(err, count){
+              if(err){
+                console.log('There was an error' + err);
+              } else {
+               console.log("data added: " + data);
+             }
+            }
+          );
+        } else {
+          console.log("Schedule data successfully retrieved for " + req.params.user_id + " as below: ");
+          console.log(JSON.stringify(items));
+        }
 
         //add each item in the document to data
         data.pt2_time = items[0].pt2_time;
@@ -350,13 +437,13 @@ app.get('/:user_id/auto', function(req, res){
         data.color_id = items[0].color_id;
 
         //update the light state
-        var currentTime = convertCurrentTime(Date.now()); //get current time
-        var currentBri = getCurrentBri(currentTime, data.pt2_time, data.pt2_bri, data.pt3_time, data.pt3_bri); //get current brightness
-        changeLightColBri(data.user_id, data.color_id, currentBri); //change light color and brightness
+        var date = new Date();
+        var currentTime = convertCurrentTime(date); //get current time
+        var currentBri = getCurrentBri(currentTime, items[0].pt2_time, items[0].pt2_bri, items[0].pt3_time, items[0].pt3_bri); //get current brightness
+        changeLightColBri(req.params.user_id, items[0].color_id, currentBri); //change light color and brightness
 
         //add current brightness to data
         data.currentBri = currentBri;
-        //console.log(currentBri);
 
       }
 
@@ -374,8 +461,8 @@ app.get('/:user_id/manual', function(req, res){
   var data = {}; //data to be passed to the client
   data.user_id = req.params.user_id;
 
-  //turn off the polling status of the user
-  switchPolling(req.params.user_id, false);
+  //turn off the dimming status of the user
+  switchDimmingStatus(req.params.user_id, false);
 
   //retrieve items from schedule_table in db
   var schedule_table = db.collection("schedule_table");
@@ -434,11 +521,52 @@ app.get('/:user_id/addColor', function(req, res){
 });
 
 
+//--------------------------------------------------------------------------------
+app.get('/addUser', function(req, res){
+  var data = {};
+  
+  res.render('layouts/addUser', data);
+});
+
+//--------------------------------------------------------------------------------
+app.post('/addUser', function(req, res){
+  var user_table = db.collection("user_table");
+
+  var data = {
+      user_id         : req.body.user_id,
+      timestamp       : Date.now(),
+      user_pw         : "password",
+      email           : "test@gmail.com",
+      bridge_ip       : req.body.bridge_ip,
+      bridge_username : req.body.bridge_username,
+      light_name      : "light name",
+      light_id        : req.body.light_id,
+      dimming_status  : true
+  };
+
+  user_table.insert(data,
+    function(err, count){
+      if(err){
+        console.log('There was an error' + err);
+      } else {
+       console.log("data added: " + data);
+     }
+    }
+  );
+
+  res.send(data);
+});
+
+
+
+
 
 
 
 //--------------------------------------------------------------------------------
 app.post('/:user_id/update_values', function(req, res){
+  console.log('There was an access to UPDATE VALUES by ' + req.params.user_id + ".");
+
   //if the request has all the nessesary parameters 
   if(req.body.pt2_time && req.body.pt2_bri && req.body.pt3_time && req.body.pt3_bri && req.body.color_id){
 
@@ -494,9 +622,7 @@ app.post('/:user_id/update_values', function(req, res){
 
 //--------------------------------------------------------------------------------
 app.post('/:user_id/temporal', function(req, res){
-  console.log(req.body.mode);
-  console.log(req.body.state);
-  console.log(req.body.color_id);
+  console.log('There was an access to TEMPORAL by ' + req.params.user_id + ".");
 
   //if the request has all the nessesary parameters 
   if (req.body.mode && req.body.state && req.body.color_id){
@@ -505,22 +631,22 @@ app.post('/:user_id/temporal', function(req, res){
     if (req.body.mode == "auto"){
       switch(req.body.state){
         case "full": //---------------------------------------
-          //turn off the polling status of the user
-          switchPolling(req.params.user_id, false);
+          //turn off the dimming status of the user
+          switchDimmingStatus(req.params.user_id, false);
           //change the light color and brightness
           turnLightFullOrOff(req.params.user_id, "full");
           break;
 
         case "off": //---------------------------------------
-          //turn off the polling status of the user
-          switchPolling(req.params.user_id, false);
+          //turn off the dimming status of the user
+          switchDimmingStatus(req.params.user_id, false);
           //change the light color and brightness
           turnLightFullOrOff(req.params.user_id, "off");
           break;
 
         case "cancel": //---------------------------------------
-          //turn on the polling status of the user
-          switchPolling(req.params.user_id, true);
+          //turn on the dimming status of the user
+          switchDimmingStatus(req.params.user_id, true);
 
           var schedule;
            //retrieve items from schedule_table in db
@@ -552,27 +678,27 @@ app.post('/:user_id/temporal', function(req, res){
     } else if (req.body.mode == "manual"){
       switch(req.body.state){
         case "full": //---------------------------------------
-          //turn off the polling status of the user
-          switchPolling(req.params.user_id, false);
+          //turn off the dimming status of the user
+          switchDimmingStatus(req.params.user_id, false);
           //change the light color and brightness
           turnLightFullOrOff(req.params.user_id, "full");
           break;
 
         case "off": //---------------------------------------
-          //turn off the polling status of the user
-          switchPolling(req.params.user_id, false);
+          //turn off the dimming status of the user
+          switchDimmingStatus(req.params.user_id, false);
           //change the light color and brightness
           turnLightFullOrOff(req.params.user_id, "off");
           break;
 
-          /*
+        
         default: //---------------------------------------
-          //turn on the polling status of the user
-          switchPolling(req.params.user_id, false);
+          //turn on the dimming status of the user
+          switchDimmingStatus(req.params.user_id, false);
           //turn it back 
           changeLightColBri(req.params.user_id, req.body.color_id, req.body.state);
-          console.log(req.body.state);
-          */
+          //console.log(req.body.state);
+          
 
       }
     }
@@ -580,125 +706,6 @@ app.post('/:user_id/temporal', function(req, res){
 
   res.end();
 });
-
-
-
-
-
-//----------------------------------------
-//response to the POST request to turn on or off the light
-app.post('/hueapi/changeBri', function(req, res){
-  var state = lightState.create();
-
-  // Set light state to 'on' first
-  api.setLightState(lightId, state.on())
-    .then(displayResult)
-    .done();
-
-  if (req.body.brightness){
-      // Set the brightness with the given value
-      state.bri(req.body.brightness);
-      api.setLightState(lightId, state)
-        .then(displayResult)
-        .done();
-  }
-
-  res.end();
-});
-
-
-
-
-
-
-
-
-
-//================================================
-//for db test
-//================================================
-//----------------------------------------
-//test schedule_table
-app.get('/:user_id/test_schedule', function(req, res){
-  var schedule_table = db.collection("schedule_table");
-  
-  var user_id = req.params.user_id;
-  var timestamp = Date.now();
-  var pt2_time = 12;
-  var pt2_bri = 100;
-  var pt3_time = 15;
-  var pt3_bri = 15;
-  var color_id = "orange-button";
-
-  var data = {
-      user_id : user_id,
-      timestamp : timestamp,
-      pt2_time : pt2_time, 
-      pt2_bri : pt2_bri, 
-      pt3_time : pt3_time, 
-      pt3_bri : pt3_bri, 
-      color_id : color_id
-  };
-
-  schedule_table.insert(data,
-    function(err, count){
-      if(err){
-        console.log('There was an error' + err);
-      } else {
-       console.log("data added: " + data);
-     }
-    }
-  );
-
-  res.send(data);
-});
-
-//----------------------------------------
-//test user_table
-app.get('/:user_id/test_user', function(req, res){
-  var user_table = db.collection("user_table");
-  
-  var user_id = req.params.user_id;
-  var timestamp = Date.now();
-  var user_pw = "password";
-  var email = "test@gmail.com";
-  var bridge_ip = "128.122.151.166"; //128.122.151.166 itp    //192.168.2.5 home
-  var bridge_username = "matanseiya"; //matanseiya itp    //seiyakobayashi home
-  var light_name = "MaTanSeiya2"; // MaTanSeiya  itp   //seiyalight1 home
-  var light_id = 6;  // 5  itp    4 home
-  var polling_status = true;
-
-  var data = {
-      user_id : user_id,
-      timestamp : timestamp,
-      user_pw : user_pw,
-      email : email,
-      bridge_ip : bridge_ip,
-      bridge_username : bridge_username,
-      light_name : light_name,
-      light_id : light_id,
-      polling_status : polling_status
-  };
-
-  user_table.insert(data,
-    function(err, count){
-      if(err){
-        console.log('There was an error' + err);
-      } else {
-       console.log("data added: " + data);
-     }
-    }
-  );
-
-  res.send(data);
-});
-
-
-
-
-
-
-
 
 
 
@@ -714,8 +721,11 @@ MongoClient.connect(MONGO_URL, function(_err, _db){
     //console.log(db);
 
     var server = app.listen(8080, function(){
-    console.log('Listening on port %d', server.address().port);
-  });
+      console.log('Listening on port %d', server.address().port);
+    });
+
+    startDimmer();
+
 })
 
 // //============================================

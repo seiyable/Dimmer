@@ -137,11 +137,24 @@ function mouseDragged(){
 //when you relase your clicked mouse on the canvas
 function mouseReleased(){
 
-	//change the brightness of the light
-	changeLightStatusTemp("manual", currentBrightness, selectedColorId);
+	var slider_left_edge    = (width  - slider_base_actual_ImageWidth)  / 2;
+	var slider_right_edge   = slider_left_edge + (slider_yellow_lr_actual_ImageWidth * 2) + getBarWidth(currentBrightness);
+	var slider_top_edge     = (height - slider_base_actual_ImageHeight) / 2;
+	var slider_bottom_edge  = slider_top_edge + slider_base_actual_ImageHeight;
+	var margin              = slider_base_actual_ImageWidth / 10;
 
-	$("#middle-button-full").removeClass("active");
-    $("#middle-button-off").removeClass("active");
+	//if your mouse is on the yellow bar
+	if(mouseX > slider_left_edge - margin && mouseX < slider_right_edge + margin && mouseY > slider_top_edge && mouseY < slider_bottom_edge){
+		//if the bar is in the right range
+		if(getBri(mouseX) >= 0 && getBri(mouseX) <= 101){
+			//change the brightness of the light
+			changeLightStatusTemp("manual", currentBrightness, selectedColorId);
+
+			$("#manual-middle-button-full").removeClass("active");
+    		$("#manual-middle-button-off").removeClass("active");
+    	}
+    }
+
 }
 
 //=========== windowResized() ===========

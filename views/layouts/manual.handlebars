@@ -11,9 +11,9 @@
     </div><!-- manual-brightness-area -->
 
     <div class="row" id="middle-bar">
-        <div class="button" id="middle-button-full">Full Brightness
+        <div class="button" id="manual-middle-button-full">Full Brightness
         </div>
-        <div class="button" id="middle-button-off">Turn Off
+        <div class="button" id="manual-middle-button-off">Turn Off
         </div>
     </div><!-- middle-bar -->
 
@@ -24,7 +24,7 @@
     <div class="row" id="color-palette-1st">
         <div class="color-cell" id="white">
             <p class="colorName">White</p>
-            <div class="color-button active" id="white-button"></div>
+            <div class="color-button" id="white-button"></div>
         </div>
         <div class="color-cell" id="yellow">
             <p class="colorName">Yellow</p>
@@ -80,6 +80,9 @@
 
 <script>
 $(document).ready(function () {
+    //add class "active" to the div with selected color
+    $('#' + selectedColorId).addClass("active");
+
     //when user clicks a button on the top bar, toggle it
     $("#top-button-auto").click(function(){
         $(this).toggleClass("active");
@@ -95,9 +98,9 @@ $(document).ready(function () {
     });
 
     //when user clicks a button on the middle bar, toggle it
-    $("#middle-button-full").click(function(){
+    $("#manual-middle-button-full").click(function(){
         $(this).toggleClass("active");
-        $("#middle-button-off").removeClass("active");
+        $("#manual-middle-button-off").removeClass("active");
 
         //Post request to server
         if($(this).hasClass("active")){
@@ -110,9 +113,9 @@ $(document).ready(function () {
 
         }
     });
-    $("#middle-button-off").click(function(){
+    $("#manual-middle-button-off").click(function(){
         $(this).toggleClass("active");
-        $("#middle-button-full").removeClass("active");
+        $("#manual-middle-button-full").removeClass("active");
 
         //Post request to server
         if($(this).hasClass("active")){
